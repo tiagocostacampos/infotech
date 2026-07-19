@@ -1,0 +1,2448 @@
+<!-- Top-Level Navigation Bar -->
+<header id="navbar-main" class="sticky top-0 z-40 w-full bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/80 shadow-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <!-- Logo -->
+    <button type="button" (click)="switchTab('home')" class="flex items-center gap-2.5 font-display font-extrabold text-xl text-white tracking-tight hover:opacity-90 cursor-pointer border-none bg-transparent group">
+      <span class="p-2 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:scale-105 transition-transform duration-200">
+        <mat-icon class="text-base">computer</mat-icon>
+      </span>
+      <span class="font-sans font-black text-white">Info<span class="text-emerald-400 group-hover:text-emerald-300 transition-colors duration-200">Tech</span></span>
+    </button>
+
+    <!-- Navigation Tabs -->
+    <nav class="hidden md:flex items-center gap-2 font-sans bg-zinc-900/60 p-1.5 rounded-2xl border border-zinc-800/50">
+      <button 
+        type="button"
+        (click)="switchTab('home')" 
+        [class]="activeTab() === 'home' 
+          ? 'bg-emerald-500/10 text-emerald-400 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/25 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
+          : 'text-zinc-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-transparent transition-all duration-300 cursor-pointer'"
+      >
+        <mat-icon class="text-base" [class]="activeTab() === 'home' ? 'text-emerald-400' : 'text-zinc-500'">home_repair_service</mat-icon>
+        Início e Serviços
+      </button>
+      <button 
+        type="button"
+        (click)="switchTab('shop')" 
+        [class]="activeTab() === 'shop' 
+          ? 'bg-emerald-500/10 text-emerald-400 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/25 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
+          : 'text-zinc-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-transparent transition-all duration-300 cursor-pointer'"
+      >
+        <mat-icon class="text-base" [class]="activeTab() === 'shop' ? 'text-emerald-400' : 'text-zinc-500'">storefront</mat-icon>
+        Loja de Peças
+      </button>
+      <button 
+        type="button"
+        (click)="switchTab('client')" 
+        [class]="activeTab() === 'client' 
+          ? 'bg-emerald-500/10 text-emerald-400 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/25 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
+          : 'text-zinc-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-transparent transition-all duration-300 cursor-pointer'"
+      >
+        <mat-icon class="text-base" [class]="activeTab() === 'client' ? 'text-emerald-400' : 'text-zinc-500'">account_circle</mat-icon>
+        Área do Cliente
+        @if (store.currentUser(); as user) {
+          <span class="ml-1.5 px-2 py-0.5 text-[9px] rounded-full uppercase font-black leading-none shadow-xs border transition-all duration-300"
+            [class]="activeTab() === 'client'
+              ? 'bg-emerald-500 text-white border-emerald-400'
+              : 'bg-zinc-850 text-zinc-300 border-zinc-700'"
+          >
+            {{ user.role === 'admin' ? 'Téc' : 'Ativo' }}
+          </span>
+        }
+      </button>
+    </nav>
+
+    <!-- Quick Actions & Session -->
+    <div class="flex items-center gap-2.5">
+      <!-- Shopping Cart Button -->
+      <button 
+        type="button"
+        (click)="isCartOpen.set(true)" 
+        class="relative w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-850 rounded-xl border border-zinc-800 transition-all duration-200 cursor-pointer shadow-xs"
+        aria-label="Carrinho de Compras"
+      >
+        <mat-icon class="text-lg">shopping_cart</mat-icon>
+        @if (store.cartCount() > 0) {
+          <span class="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-emerald-500 text-white text-[10px] font-black rounded-full flex items-center justify-center animate-bounce shadow-md">
+            {{ store.cartCount() }}
+          </span>
+        }
+      </button>
+
+      <!-- User Greeting -->
+      @if (store.currentUser(); as user) {
+        <button type="button" (click)="switchTab('client')" class="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-zinc-900 hover:bg-zinc-850 rounded-xl border border-zinc-800 transition-all cursor-pointer">
+          <mat-icon class="text-zinc-400 text-sm">person</mat-icon>
+          <span class="text-xs font-semibold text-zinc-300 max-w-[100px] truncate">{{ user.name.split(' ')[0] }}</span>
+        </button>
+      }
+
+      <button 
+        type="button"
+        (click)="openGeneralWhatsApp()" 
+        class="flex items-center gap-1.5 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] text-white font-bold text-xs rounded-xl transition-all shadow-sm cursor-pointer border-none"
+      >
+        <mat-icon class="text-base">chat</mat-icon>
+        <span class="hidden sm:inline">WhatsApp</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Navigation Bar -->
+<div class="md:hidden fixed bottom-6 left-6 right-6 z-30 bg-zinc-950/95 backdrop-blur-md border border-zinc-800/80 px-6 py-3.5 flex justify-around items-center rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.7)]">
+  <button type="button" (click)="switchTab('home')" [class]="activeTab() === 'home' ? 'text-emerald-400 flex flex-col items-center border-none bg-transparent scale-105 transition-all duration-300 font-extrabold' : 'text-zinc-500 flex flex-col items-center border-none bg-transparent transition-all duration-300'">
+    <mat-icon>home_repair_service</mat-icon>
+    <span class="text-[9px] font-bold mt-0.5">Serviços</span>
+  </button>
+  <button type="button" (click)="switchTab('shop')" [class]="activeTab() === 'shop' ? 'text-emerald-400 flex flex-col items-center border-none bg-transparent scale-105 transition-all duration-300 font-extrabold' : 'text-zinc-500 flex flex-col items-center border-none bg-transparent transition-all duration-300'">
+    <mat-icon>storefront</mat-icon>
+    <span class="text-[9px] font-bold mt-0.5">Peças</span>
+  </button>
+  <button type="button" (click)="switchTab('client')" [class]="activeTab() === 'client' ? 'text-emerald-400 flex flex-col items-center border-none bg-transparent scale-105 transition-all duration-300 font-extrabold' : 'text-zinc-500 flex flex-col items-center border-none bg-transparent transition-all duration-300'">
+    <mat-icon>account_circle</mat-icon>
+    <span class="text-[9px] font-bold mt-0.5">Cliente</span>
+  </button>
+</div>
+
+<!-- Main Workspace Content -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:pb-12">
+
+  <!-- ==================== VIEW 1: HOME PAGE ==================== -->
+  @if (activeTab() === 'home') {
+    <div class="space-y-16 animate-fade-in">
+      
+      <!-- HERO & TRACKER WIDGET -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-zinc-50 rounded-3xl p-6 sm:p-10 border border-zinc-200/50">
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-semibold rounded-full uppercase tracking-wider">
+            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+            Suporte de Alta Precisão
+          </div>
+          <h1 class="font-display font-extrabold text-4xl sm:text-5xl text-zinc-900 tracking-tight leading-tight">
+            Seu notebook ou desktop em boas mãos.
+          </h1>
+          <p class="text-zinc-600 text-base sm:text-lg leading-relaxed max-w-xl">
+            Reparo especializado, higienização profissional, montagem gamer e upgrade de hardware com garantia total e rastreamento em tempo real.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <a href="#orcamento-form" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold rounded-xl transition-all shadow-md">
+              <mat-icon>schedule</mat-icon>
+              Simular Orçamento & Agendar
+            </a>
+            <button type="button" (click)="switchTab('shop')" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-zinc-50 text-zinc-800 font-semibold rounded-xl border border-zinc-200 transition-all">
+              <mat-icon>shopping_bag</mat-icon>
+              Ver Peças à Venda
+            </button>
+          </div>
+        </div>
+
+        <!-- Fast Tracker Widget -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-zinc-200/80 shadow-md space-y-5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center text-zinc-800">
+              <mat-icon>search</mat-icon>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-zinc-900 text-base">Rastreamento de Reparo</h3>
+              <p class="text-xs text-zinc-500">Acompanhe seu status em tempo real</p>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Código da Ordem de Serviço</span>
+            <div class="flex gap-2">
+              <input 
+                id="search-tracker-input"
+                type="text" 
+                [value]="trackSearchId()"
+                (input)="trackSearchId.set($any($event.target).value)"
+                (keyup.enter)="searchRepairTrack()"
+                placeholder="Ex: OS-1024" 
+                class="flex-1 px-3.5 py-2.5 border border-zinc-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 uppercase"
+              />
+              <button 
+                type="button"
+                (click)="searchRepairTrack()"
+                class="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-sm font-semibold transition-all cursor-pointer"
+              >
+                Buscar
+              </button>
+            </div>
+            <p class="text-[11px] text-zinc-500">
+              Teste: <button type="button" (click)="quickTrack('OS-1024')" class="text-emerald-600 font-semibold hover:underline cursor-pointer border-none bg-transparent">OS-1024</button> ou <button type="button" (click)="quickTrack('OS-1025')" class="text-emerald-600 font-semibold hover:underline cursor-pointer border-none bg-transparent">OS-1025</button>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAIN LIVE REPAIR TRACKER DISPLAY -->
+      @if (trackedRepair(); as repair) {
+        <section id="tracking-section" class="bg-white rounded-2xl border border-emerald-500/20 p-6 shadow-md animate-fade-in space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-zinc-100">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-mono font-extrabold rounded-lg border border-emerald-500/25">
+                  {{ repair.id }}
+                </span>
+                <span class="text-xs text-zinc-400 font-medium">Cadastrado em {{ repair.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <h2 class="font-display font-extrabold text-xl text-zinc-900">
+                {{ repair.deviceType }} — <span class="text-zinc-600">{{ repair.deviceBrandModel }}</span>
+              </h2>
+            </div>
+            <div class="flex gap-2 items-center">
+              <button 
+                type="button"
+                (click)="openPrintBudgetModal(repair)"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 hover:shadow-[0_0_15px_rgba(16,185,129,0.2)] text-white text-xs font-semibold rounded-lg transition-all cursor-pointer border-none"
+              >
+                <mat-icon class="text-base">print</mat-icon>
+                Imprimir Orçamento
+              </button>
+              <button 
+                type="button"
+                (click)="openWhatsAppContact(repair)" 
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-xs font-semibold rounded-lg border border-emerald-500/25 transition-all border-none"
+              >
+                <mat-icon class="text-base">chat</mat-icon>
+                Falar com Técnico
+              </button>
+              <button 
+                type="button"
+                (click)="trackedRepair.set(null)" 
+                class="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 rounded-lg transition-all"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step Progression Bar -->
+          <div class="space-y-4">
+            <span class="block text-xs font-bold text-zinc-500 uppercase tracking-wider">Progresso do Serviço</span>
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+              <div class="p-3 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all duration-300" 
+                [class]="repair.status === 'Recebido' ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400' : 'bg-zinc-950 border-zinc-800/80 text-zinc-500'">
+                <mat-icon [class]="repair.status === 'Recebido' ? 'text-emerald-400' : 'text-zinc-500'">check_circle</mat-icon>
+                <span class="text-xs font-bold">1. Recebido</span>
+              </div>
+              <div class="p-3 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all duration-300" 
+                [class]="repair.status === 'Em Diagnóstico' ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400' : 'bg-zinc-950 border-zinc-800/80 text-zinc-500'">
+                <mat-icon [class]="repair.status === 'Em Diagnóstico' ? 'text-emerald-400 animate-pulse' : 'text-zinc-500'">sync</mat-icon>
+                <span class="text-xs font-bold">2. Diagnóstico</span>
+              </div>
+              <div class="p-3 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all duration-300" 
+                [class]="repair.status === 'Em Reparo' ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400' : 'bg-zinc-950 border-zinc-800/80 text-zinc-500'">
+                <mat-icon [class]="repair.status === 'Em Reparo' ? 'text-emerald-400' : 'text-zinc-500'">build</mat-icon>
+                <span class="text-xs font-bold">3. Em Reparo</span>
+              </div>
+              <div class="p-3 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all duration-300" 
+                [class]="repair.status === 'Testes Finais' ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400' : 'bg-zinc-950 border-zinc-800/80 text-zinc-500'">
+                <mat-icon [class]="repair.status === 'Testes Finais' ? 'text-emerald-400' : 'text-zinc-500'">flaky</mat-icon>
+                <span class="text-xs font-bold">4. Testes</span>
+              </div>
+              <div class="p-3 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all duration-300" 
+                [class]="repair.status === 'Pronto para Retirada' ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400' : 'bg-zinc-950 border-zinc-800/80 text-zinc-500'">
+                <mat-icon [class]="repair.status === 'Pronto para Retirada' ? 'text-emerald-400' : 'text-zinc-500'">card_giftcard</mat-icon>
+                <span class="text-xs font-bold">5. Pronto</span>
+              </div>
+              <div class="p-3 rounded-xl border flex flex-col items-center text-center gap-1.5 transition-all duration-300" 
+                [class]="repair.status === 'Entregue' ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400' : 'bg-zinc-950 border-zinc-800/80 text-zinc-500'">
+                <mat-icon [class]="repair.status === 'Entregue' ? 'text-emerald-400' : 'text-zinc-500'">verified</mat-icon>
+                <span class="text-xs font-bold">6. Entregue</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Technical Details Card -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-zinc-50 rounded-xl p-5 border border-zinc-100 text-sm">
+            <div class="space-y-3">
+              <span class="block font-bold text-zinc-800">Laudo Técnico / Observações</span>
+              <p class="text-zinc-600 leading-relaxed italic bg-white p-3 rounded-lg border border-zinc-200/50">
+                "{{ repair.technicianComments }}"
+              </p>
+              <div class="text-xs text-zinc-500 space-y-1">
+                <p><strong>Urgência definida:</strong> <span class="font-semibold">{{ repair.urgency }}</span></p>
+                <p><strong>Dono:</strong> {{ repair.clientName }}</p>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <span class="block font-bold text-zinc-800">Detalhamento de Custos</span>
+              <div class="bg-white rounded-lg border border-zinc-200/60 p-3.5 space-y-2">
+                <div class="flex justify-between text-xs text-zinc-500">
+                  <span>Mão de Obra Técnica:</span>
+                  <span>{{ repair.estimatedPrice | currency:'BRL' }}</span>
+                </div>
+
+                @if (repair.partsUsed.length > 0) {
+                  <div class="pt-2 border-t border-zinc-100">
+                    <span class="block text-xs font-semibold text-zinc-700 mb-1.5">Peças Aplicadas:</span>
+                    @for (part of repair.partsUsed; track $index) {
+                      <div class="flex justify-between text-xs text-zinc-600 ml-2">
+                        <span>• {{ part.name }}</span>
+                        <span>{{ part.price | currency:'BRL' }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <div class="flex justify-between pt-2 border-t border-zinc-200 font-bold text-zinc-800 text-sm">
+                  <span>Preço Final Consolidado:</span>
+                  <span class="text-emerald-600 font-mono">{{ repair.finalPrice | currency:'BRL' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+
+      @if (trackError()) {
+        <div class="p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl flex items-center gap-2 animate-fade-in">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ trackError() }}</span>
+        </div>
+      }
+
+      <!-- CORE TECHNICAL SERVICES CATALOG -->
+      <section class="space-y-8">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+          <h2 class="font-display font-extrabold text-3xl text-zinc-900 tracking-tight">Nossos Serviços Especializados</h2>
+          <p class="text-zinc-600 text-sm">Diagnóstico preciso e reparos rápidos para computadores e notebooks.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-2xl border border-zinc-200/75 shadow-xs hover:shadow-md transition-all space-y-4">
+            <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+              <mat-icon>laptop_mac</mat-icon>
+            </div>
+            <h3 class="font-display font-bold text-zinc-900 text-lg">Reparo de Notebooks</h3>
+            <p class="text-sm text-zinc-500 leading-relaxed">Troca de telas quebradas, baterias, dobradiças rachadas, teclados e carcaças completas.</p>
+            <div class="pt-2 flex justify-between items-center text-xs text-zinc-400">
+              <span>Mão de obra média:</span>
+              <span class="font-bold text-zinc-800 font-mono">A partir de R$ 150,00</span>
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-zinc-200/75 shadow-xs hover:shadow-md transition-all space-y-4">
+            <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+              <mat-icon>speed</mat-icon>
+            </div>
+            <h3 class="font-display font-bold text-zinc-900 text-lg">Upgrade Turbo (SSD & RAM)</h3>
+            <p class="text-sm text-zinc-500 leading-relaxed">Deixe seu computador antigo até 10x mais rápido com SSDs de alta velocidade e mais memória RAM.</p>
+            <div class="pt-2 flex justify-between items-center text-xs text-zinc-400">
+              <span>Mão de obra média:</span>
+              <span class="font-bold text-zinc-800 font-mono">A partir de R$ 100,00</span>
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-2xl border border-zinc-200/75 shadow-xs hover:shadow-md transition-all space-y-4">
+            <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600">
+              <mat-icon>build</mat-icon>
+            </div>
+            <h3 class="font-display font-bold text-zinc-900 text-lg">Limpeza & Montagem Gamer</h3>
+            <p class="text-sm text-zinc-500 leading-relaxed">Instalação minuciosa, cable management profissional, higienização interna e aplicação de pasta térmica de prata.</p>
+            <div class="pt-2 flex justify-between items-center text-xs text-zinc-400">
+              <span>Mão de obra média:</span>
+              <span class="font-bold text-zinc-800 font-mono">A partir de R$ 120,00</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BEFORE & AFTER GALLERY -->
+      <section class="space-y-8 bg-zinc-50 -mx-4 px-4 py-12 sm:px-12 rounded-3xl border border-zinc-100">
+        <div class="text-center max-w-xl mx-auto space-y-2">
+          <h2 class="font-display font-extrabold text-3xl text-zinc-900 tracking-tight">Serviços Executados</h2>
+          <p class="text-zinc-600 text-sm">Fotos reais de reparos realizados em nossa bancada de manutenção.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl border border-zinc-200/80 overflow-hidden shadow-xs space-y-4 pb-4">
+            <div class="grid grid-cols-2 gap-0.5 bg-zinc-200">
+              <div class="relative h-44 bg-zinc-900">
+                <img src="https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=400&q=80" alt="Sujeira" class="w-full h-full object-cover opacity-75" referrerpolicy="no-referrer" />
+                <span class="absolute top-2 left-2 px-1.5 py-0.5 bg-red-600 text-white text-[9px] font-bold rounded">ANTES</span>
+              </div>
+              <div class="relative h-44 bg-zinc-900">
+                <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=400&q=80" alt="Limpo" class="w-full h-full object-cover" referrerpolicy="no-referrer" />
+                <span class="absolute top-2 left-2 px-1.5 py-0.5 bg-emerald-500 text-white text-[9px] font-bold rounded">DEPOIS</span>
+              </div>
+            </div>
+            <div class="px-4 space-y-1">
+              <span class="text-[10px] uppercase font-bold text-emerald-600">Notebook Dell G15</span>
+              <h4 class="font-bold text-sm text-zinc-950">Limpeza Térmica Preventiva</h4>
+              <p class="text-xs text-zinc-500">Desoxidação do cooler e aplicação de pasta térmica especial de alta condutividade.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-zinc-200/80 overflow-hidden shadow-xs space-y-4 pb-4">
+            <div class="grid grid-cols-2 gap-0.5 bg-zinc-200">
+              <div class="relative h-44 bg-zinc-900">
+                <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=400&q=80" alt="Quebrado" class="w-full h-full object-cover opacity-75" referrerpolicy="no-referrer" />
+                <span class="absolute top-2 left-2 px-1.5 py-0.5 bg-red-600 text-white text-[9px] font-bold rounded">ANTES</span>
+              </div>
+              <div class="relative h-44 bg-zinc-900">
+                <img src="https://images.unsplash.com/photo-1597852074816-d933c7d2b988?auto=format&fit=crop&w=400&q=80" alt="Recuperado" class="w-full h-full object-cover" referrerpolicy="no-referrer" />
+                <span class="absolute top-2 left-2 px-1.5 py-0.5 bg-emerald-500 text-white text-[9px] font-bold rounded">DEPOIS</span>
+              </div>
+            </div>
+            <div class="px-4 space-y-1">
+              <span class="text-[10px] uppercase font-bold text-emerald-600">Lenovo IdeaPad 3</span>
+              <h4 class="font-bold text-sm text-zinc-950">Recuperação de Dobradiça</h4>
+              <p class="text-xs text-zinc-500">Reconstrução interna das bases plásticas dos parafusos com soldagem especial.</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-zinc-200/80 overflow-hidden shadow-xs space-y-4 pb-4">
+            <div class="grid grid-cols-2 gap-0.5 bg-zinc-200">
+              <div class="relative h-44 bg-zinc-900">
+                <img src="https://images.unsplash.com/photo-1562976540-1502c2145186?auto=format&fit=crop&w=400&q=80" alt="Desorganizado" class="w-full h-full object-cover opacity-70" referrerpolicy="no-referrer" />
+                <span class="absolute top-2 left-2 px-1.5 py-0.5 bg-red-600 text-white text-[9px] font-bold rounded">ANTES</span>
+              </div>
+              <div class="relative h-44 bg-zinc-900">
+                <img src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=400&q=80" alt="Arrumado" class="w-full h-full object-cover" referrerpolicy="no-referrer" />
+                <span class="absolute top-2 left-2 px-1.5 py-0.5 bg-emerald-500 text-white text-[9px] font-bold rounded">DEPOIS</span>
+              </div>
+            </div>
+            <div class="px-4 space-y-1">
+              <span class="text-[10px] uppercase font-bold text-emerald-600">PC Gamer Intel Core i7</span>
+              <h4 class="font-bold text-sm text-zinc-950">Cable Management</h4>
+              <p class="text-xs text-zinc-500">Organização profissional de cabos, otimizando o fluxo de ar no gabinete gamer.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INTERACTIVE BUDGET REQUEST & APPOINTMENT BOOKING FORM -->
+      <section id="orcamento-form" class="scroll-mt-20 bg-white border border-zinc-200 p-6 sm:p-10 rounded-2xl shadow-sm space-y-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div class="space-y-1">
+            <h2 class="font-display font-extrabold text-3xl text-zinc-900 tracking-tight">Solicite seu Orçamento</h2>
+            <p class="text-zinc-600 text-sm">Preencha as informações do seu equipamento para solicitar um orçamento personalizado!</p>
+          </div>
+        </div>
+
+        <form [formGroup]="budgetForm" (ngSubmit)="submitBudgetForm()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <span class="block font-display font-bold text-base text-zinc-900 border-b border-zinc-100 pb-2">Seus Dados de Contato</span>
+            
+            <div class="space-y-1">
+              <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Nome Completo</span>
+              <input 
+                id="budget-client-name"
+                type="text" 
+                formControlName="clientName" 
+                placeholder="Ex: João da Silva" 
+                class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              @if (budgetForm.get('clientName')?.touched && budgetForm.get('clientName')?.invalid) {
+                <span class="text-[11px] text-red-500 font-medium">Nome completo é obrigatório.</span>
+              }
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">WhatsApp com DDD</span>
+                <input 
+                  id="budget-client-phone"
+                  type="text" 
+                  formControlName="clientPhone" 
+                  placeholder="Ex: 11999998888" 
+                  class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                @if (budgetForm.get('clientPhone')?.touched && budgetForm.get('clientPhone')?.invalid) {
+                  <span class="text-[11px] text-red-500 font-medium">WhatsApp é obrigatório.</span>
+                }
+              </div>
+
+              <div class="space-y-1">
+                <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Seu Melhor E-mail</span>
+                <input 
+                  id="budget-client-email"
+                  type="email" 
+                  formControlName="clientEmail" 
+                  placeholder="Ex: joao@email.com" 
+                  class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                @if (budgetForm.get('clientEmail')?.touched && budgetForm.get('clientEmail')?.invalid) {
+                  @if (budgetForm.get('clientEmail')?.hasError('registered')) {
+                    <span class="text-[11px] text-red-500 font-medium">Este e-mail já está cadastrado. Faça login na Área do Cliente ou use outro.</span>
+                  } @else {
+                    <span class="text-[11px] text-red-500 font-medium">E-mail válido é obrigatório.</span>
+                  }
+                }
+              </div>
+            </div>
+
+            @if (!store.currentUser()) {
+              <div class="p-4 bg-zinc-50 rounded-2xl border border-zinc-200/80 space-y-3.5 mt-2 animate-fade-in">
+                <div class="flex items-center justify-between border-b border-zinc-100 pb-2">
+                  <div class="flex items-center gap-1.5 text-zinc-900 font-bold text-xs uppercase tracking-wide">
+                    <mat-icon class="text-zinc-600 text-base">lock_person</mat-icon>
+                    Acesso à Área do Cliente
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer select-none">
+                    <input 
+                      type="checkbox" 
+                      formControlName="customCredentials" 
+                      class="sr-only peer"
+                    />
+                    <div class="w-8 h-4.5 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-emerald-500"></div>
+                    <span class="ml-2 text-[10px] font-bold text-zinc-600">Criar meus dados</span>
+                  </label>
+                </div>
+
+                @if (budgetForm.get('customCredentials')?.value) {
+                  <div class="grid grid-cols-2 gap-3.5 animate-fade-in">
+                    <div class="space-y-1">
+                      <span class="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Usuário</span>
+                      <input 
+                        id="budget-client-username"
+                        type="text" 
+                        formControlName="username" 
+                        placeholder="Ex: joaosilva" 
+                        class="w-full px-3 py-1.5 border border-zinc-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white font-medium"
+                      />
+                      @if (budgetForm.get('username')?.touched && budgetForm.get('username')?.invalid) {
+                        @if (budgetForm.get('username')?.hasError('taken')) {
+                          <span class="text-[10px] text-red-500">Usuário já em uso.</span>
+                        } @else {
+                          <span class="text-[10px] text-red-500">Mínimo 4 caracteres.</span>
+                        }
+                      }
+                    </div>
+                    <div class="space-y-1">
+                      <span class="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Senha</span>
+                      <input 
+                        id="budget-client-password"
+                        type="password" 
+                        formControlName="password" 
+                        placeholder="••••••" 
+                        class="w-full px-3 py-1.5 border border-zinc-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white font-medium"
+                      />
+                      @if (budgetForm.get('password')?.touched && budgetForm.get('password')?.invalid) {
+                        <span class="text-[10px] text-red-500">Mínimo 4 caracteres.</span>
+                      }
+                    </div>
+                  </div>
+                } @else {
+                  <div class="text-[11px] text-zinc-500 flex items-start gap-1.5 bg-emerald-50/40 p-2.5 rounded-xl border border-emerald-100/50">
+                    <mat-icon class="text-sm text-emerald-500 mt-0.5">info</mat-icon>
+                    <span>
+                      <strong>Geração Automática Ativa:</strong> Um login e senha seguros serão gerados e exibidos ao finalizar o envio para você acessar quando quiser.
+                    </span>
+                  </div>
+                }
+              </div>
+            }
+            
+            <div class="p-4 bg-zinc-50 rounded-xl border border-zinc-100 text-xs text-zinc-500 leading-relaxed">
+              <strong>💡 Cadastro Integrado:</strong> Seus agendamentos serão salvos em tempo real e vinculados à sua conta de cliente para acompanhamento rápido e interativo!
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <span class="block font-display font-bold text-base text-zinc-900 border-b border-zinc-100 pb-2">Dados do Equipamento</span>
+
+            <div class="space-y-1">
+              <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Tipo de Aparelho</span>
+              <select 
+                id="budget-device-type"
+                formControlName="deviceType" 
+                class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+              >
+                <option value="Notebook">Notebook</option>
+                <option value="Desktop PC">Desktop PC</option>
+                <option value="Placa-Mãe">Reparo Placa-Mãe</option>
+                <option value="Outro">Outro Equipamento</option>
+              </select>
+            </div>
+
+            <div class="space-y-1">
+              <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Serviço de Mão de Obra Desejado</span>
+              <select 
+                id="budget-labor-service"
+                formControlName="laborServiceId" 
+                class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+              >
+                <option value="" disabled selected>Selecione o serviço...</option>
+                @for (svc of store.laborServices(); track svc.id) {
+                  <option [value]="svc.id">{{ svc.name }} - {{ svc.price | currency:'BRL' }}</option>
+                }
+              </select>
+              @if (budgetForm.get('laborServiceId')?.touched && budgetForm.get('laborServiceId')?.invalid) {
+                <span class="text-[11px] text-red-500 font-medium">Por favor, escolha um serviço de mão de obra.</span>
+              }
+            </div>
+
+            @if (budgetForm.get('laborServiceId')?.value) {
+              <div class="p-3.5 bg-emerald-50/55 rounded-xl border border-emerald-100 text-xs text-zinc-600 leading-relaxed animate-fade-in space-y-1">
+                @for (svc of store.laborServices(); track svc.id) {
+                  @if (svc.id === budgetForm.get('laborServiceId')?.value) {
+                    <div>
+                      <span class="font-bold text-emerald-800 font-display">Incluso no serviço:</span> {{ svc.description }}
+                    </div>
+                    <div class="font-bold text-emerald-600 font-mono mt-1 text-[11px]">
+                      Valor Mão de Obra Pré-determinado: {{ svc.price | currency:'BRL' }}
+                    </div>
+                  }
+                }
+              </div>
+            }
+
+            <div class="space-y-1">
+              <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Marca & Modelo</span>
+              <input 
+                id="budget-brand-model"
+                type="text" 
+                formControlName="deviceBrandModel" 
+                placeholder="Ex: Dell Inspiron 15 / Ryzen 5 Custom" 
+                class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              @if (budgetForm.get('deviceBrandModel')?.touched && budgetForm.get('deviceBrandModel')?.invalid) {
+                <span class="text-[11px] text-red-500 font-medium">Marca e modelo são obrigatórios.</span>
+              }
+            </div>
+
+            <div class="space-y-1">
+              <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Descrição dos Sintomas (Defeito)</span>
+              <textarea 
+                id="budget-description"
+                formControlName="description" 
+                rows="3" 
+                placeholder="Descreva detalhadamente o comportamento apresentado..." 
+                class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              ></textarea>
+              @if (budgetForm.get('description')?.touched && budgetForm.get('description')?.invalid) {
+                <span class="text-[11px] text-red-500 font-medium">Escreva uma descrição com pelo menos 10 caracteres.</span>
+              }
+            </div>
+
+            <button 
+              type="submit" 
+              class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer border-none"
+            >
+              <mat-icon>done_all</mat-icon>
+              Confirmar Agendamento e Gerar O.S.
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- TESTIMONIALS -->
+      <section class="space-y-8">
+        <div class="flex justify-between items-end gap-4 max-w-7xl mx-auto">
+          <div class="space-y-2">
+            <h2 class="font-display font-extrabold text-3xl text-zinc-900 tracking-tight">O que dizem nossos clientes</h2>
+            <p class="text-zinc-600 text-sm">Feedbacks reais sobre o atendimento de nossa equipe técnica.</p>
+          </div>
+          <button 
+            type="button"
+            (click)="openTestimonialModal()" 
+            class="px-4 py-2 border border-zinc-200 hover:border-zinc-800 text-zinc-800 hover:bg-zinc-50 font-bold text-xs rounded-xl flex items-center gap-1 transition-all cursor-pointer bg-white"
+          >
+            <mat-icon class="text-sm">star</mat-icon>
+            Avaliar Serviços
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          @for (test of store.testimonials(); track test.id) {
+            <div class="bg-white p-6 rounded-2xl border border-zinc-200/60 shadow-xs flex flex-col justify-between space-y-4">
+              <div class="space-y-3">
+                <div class="flex text-amber-400">
+                  @for (star of [1,2,3,4,5]; track $index) {
+                    <mat-icon class="text-sm">{{ $index < test.rating ? 'star' : 'star_border' }}</mat-icon>
+                  }
+                </div>
+                <p class="text-sm text-zinc-600 leading-relaxed italic">
+                  "{{ test.comment }}"
+                </p>
+              </div>
+              <div class="flex items-center gap-3 pt-3 border-t border-zinc-100">
+                <img [src]="test.avatarUrl" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-zinc-100" referrerpolicy="no-referrer" />
+                <div>
+                  <h4 class="font-bold text-xs text-zinc-950">{{ test.name }}</h4>
+                  <span class="text-[10px] text-zinc-400">Cliente em {{ test.date }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  }
+
+  <!-- ==================== VIEW 2: SPARE PARTS SHOP ==================== -->
+  @if (activeTab() === 'shop') {
+    <div class="space-y-8 animate-fade-in">
+      <div class="space-y-2">
+        <h1 class="font-display font-extrabold text-3xl text-zinc-900 tracking-tight">Loja de Peças e Componentes</h1>
+        <p class="text-zinc-600 text-sm">Hardware novo e original com garantia de bancada e preços atualizados.</p>
+      </div>
+
+      <!-- FILTER CONTROLS & SEARCH -->
+      <section class="bg-white p-4 rounded-2xl border border-zinc-200/80 flex flex-col md:flex-row gap-4 items-center justify-between shadow-xs">
+        <div class="relative w-full md:w-96">
+          <mat-icon class="absolute left-3.5 top-2.5 text-zinc-400">search</mat-icon>
+          <input 
+            id="shop-search-input"
+            type="text" 
+            [value]="shopSearch()"
+            (input)="shopSearch.set($any($event.target).value)"
+            placeholder="Buscar peça, modelo ou tipo..." 
+            class="w-full pl-11 pr-4 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+        </div>
+
+        <div class="w-full md:w-auto flex flex-wrap gap-1.5 justify-start md:justify-center overflow-x-auto py-1">
+          @for (cat of ['Todos', 'Notebook', 'Desktop', 'Armazenamento', 'Memória', 'Processador', 'Acessórios']; track cat) {
+            <button 
+              type="button"
+              (click)="shopCategory.set(cat)"
+              [class]="shopCategory() === cat ? 'bg-zinc-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold border-none' : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border-none'"
+            >
+              {{ cat }}
+            </button>
+          }
+        </div>
+
+        <div class="w-full md:w-auto flex items-center gap-2">
+          <span class="text-xs font-medium text-zinc-500 whitespace-nowrap">Ordenar por:</span>
+          <select 
+            id="shop-sort-select"
+            [value]="shopSort()"
+            (change)="shopSort.set($any($event.target).value)" 
+            class="px-3 py-1.5 bg-white border border-zinc-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+            <option value="default">Relevância</option>
+            <option value="price_asc">Menor Preço</option>
+            <option value="price_desc">Maior Preço</option>
+            <option value="name">Nome (A-Z)</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- PRODUCTS CATALOG GRID -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        @for (part of filteredParts(); track part.id) {
+          <div class="bg-white rounded-2xl border border-zinc-200/80 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between group">
+            <div class="space-y-3">
+              <div class="relative h-44 bg-zinc-100 overflow-hidden">
+                <img [src]="part.imageUrl" [alt]="part.name" class="w-full h-full object-cover group-hover:scale-105 transition-all duration-300" referrerpolicy="no-referrer" />
+                <span class="absolute top-2 left-2 px-2 py-0.5 bg-white/95 border border-zinc-100 text-[10px] font-bold rounded text-zinc-800 uppercase">
+                  {{ part.category }}
+                </span>
+                @if (part.stock <= 3 && part.stock > 0) {
+                  <span class="absolute top-2 right-2 px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded animate-pulse">
+                    POUCAS UNIDADES
+                  </span>
+                } @else if (part.stock === 0) {
+                  <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <span class="px-3 py-1 bg-white text-red-600 font-bold text-xs rounded shadow">ESGOTADO</span>
+                  </div>
+                }
+              </div>
+
+              <div class="px-4 space-y-1">
+                <h3 class="font-display font-bold text-sm text-zinc-900 group-hover:text-emerald-600 transition-all line-clamp-2 h-10">{{ part.name }}</h3>
+                <p class="text-xs text-zinc-500 line-clamp-2 leading-relaxed h-8">{{ part.description }}</p>
+              </div>
+            </div>
+
+            <div class="p-4 pt-3 border-t border-zinc-100 flex flex-col gap-3">
+              <div class="flex justify-between items-baseline">
+                <div class="flex flex-col">
+                  <span class="text-[10px] text-zinc-400 uppercase">Preço Especial</span>
+                  <span class="text-base font-extrabold text-zinc-950 font-mono">{{ part.price | currency:'BRL' }}</span>
+                </div>
+                <span class="text-[10px] font-semibold text-zinc-500">Estoque: {{ part.stock }} un</span>
+              </div>
+
+              <button 
+                type="button"
+                [disabled]="part.stock === 0"
+                (click)="store.addToCart(part); isCartOpen.set(true)"
+                class="w-full py-2 bg-emerald-500 hover:bg-emerald-600 disabled:bg-zinc-100 disabled:text-zinc-400 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer border-none"
+              >
+                <mat-icon class="text-sm">add_shopping_cart</mat-icon>
+                Adicionar ao Carrinho
+              </button>
+            </div>
+          </div>
+        } @empty {
+          <div class="col-span-full py-16 text-center space-y-3 bg-white border border-dashed border-zinc-200 rounded-3xl">
+            <mat-icon class="text-zinc-300 text-5xl">search_off</mat-icon>
+            <h3 class="font-display font-bold text-zinc-900 text-base">Nenhum produto correspondente</h3>
+            <p class="text-xs text-zinc-500">Verifique os filtros aplicados ou sua busca textual.</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ==================== VIEW 3: AUTH & CLIENT/TECH DASHBOARD ==================== -->
+  @if (activeTab() === 'client') {
+    <div class="space-y-8 animate-fade-in">
+      
+      @if (!store.currentUser()) {
+        <section class="max-w-md mx-auto bg-white border border-zinc-200/80 rounded-3xl shadow-xl overflow-hidden animate-scale-up">
+          <div class="bg-zinc-950 text-white p-7 text-center space-y-2 relative overflow-hidden">
+            <!-- Decorative circle -->
+            <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
+            
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-white/10 rounded-2xl mb-2 backdrop-blur-sm border border-white/10">
+              <mat-icon class="text-emerald-400">lock_person</mat-icon>
+            </div>
+            <h2 class="font-display font-extrabold text-2xl tracking-tight">Área do Cliente</h2>
+            <p class="text-xs text-zinc-400 max-w-xs mx-auto">Acesse seu painel integrado para acompanhar ordens, solicitar novos reparos e gerenciar sua conta.</p>
+          </div>
+
+          <div class="p-6 space-y-5">
+            <div class="grid grid-cols-2 bg-zinc-100 p-1 rounded-2xl border border-zinc-200/40">
+              <button 
+                type="button"
+                (click)="authMode.set('login'); authError.set('')"
+                [class]="authMode() === 'login' 
+                  ? 'bg-white text-zinc-950 py-2 text-xs font-extrabold rounded-xl shadow-xs border border-zinc-200/20 transition-all' 
+                  : 'text-zinc-500 py-2 text-xs font-bold hover:text-zinc-900 cursor-pointer border-none bg-transparent transition-all'"
+              >
+                Fazer Login
+              </button>
+              <button 
+                type="button"
+                (click)="authMode.set('register'); authError.set('')"
+                [class]="authMode() === 'register' 
+                  ? 'bg-white text-zinc-950 py-2 text-xs font-extrabold rounded-xl shadow-xs border border-zinc-200/20 transition-all' 
+                  : 'text-zinc-500 py-2 text-xs font-bold hover:text-zinc-900 cursor-pointer border-none bg-transparent transition-all'"
+              >
+                Criar Conta
+              </button>
+            </div>
+
+            <!-- Demo Access badges -->
+            <div class="p-3.5 bg-zinc-50 rounded-2xl border border-zinc-200/60 text-[11px] text-zinc-600 leading-relaxed">
+              <div class="flex items-center gap-1 font-bold text-zinc-700 mb-1.5">
+                <mat-icon class="text-xs text-zinc-500">vpn_key</mat-icon>
+                Acesso Rápido de Demonstração:
+              </div>
+              <div class="grid grid-cols-2 gap-2 mt-1 font-mono">
+                <div class="bg-white p-2 rounded-xl border border-zinc-200/40 flex flex-col justify-between">
+                  <div>
+                    <span class="text-[8px] text-zinc-400 font-sans font-extrabold uppercase tracking-wider block">Técnico Admin</span>
+                    <span class="text-[10px] text-zinc-800">User: <strong class="text-emerald-600 font-sans">tecnico</strong></span>
+                  </div>
+                  <span class="text-[10px] text-zinc-500 mt-1">Senha: <strong class="text-zinc-700">123</strong></span>
+                </div>
+                <div class="bg-white p-2 rounded-xl border border-zinc-200/40 flex flex-col justify-between">
+                  <div>
+                    <span class="text-[8px] text-zinc-400 font-sans font-extrabold uppercase tracking-wider block">Cliente Demo</span>
+                    <span class="text-[10px] text-zinc-800">User: <strong class="text-emerald-600 font-sans">cliente</strong></span>
+                  </div>
+                  <span class="text-[10px] text-zinc-500 mt-1">Senha: <strong class="text-zinc-700">123</strong></span>
+                </div>
+              </div>
+            </div>
+
+            @if (authMode() === 'login') {
+              <form [formGroup]="loginForm" (ngSubmit)="handleLogin()" class="space-y-4">
+                <div class="space-y-1">
+                  <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Nome de Usuário</span>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-400 pointer-events-none">
+                      <mat-icon class="text-sm">alternate_email</mat-icon>
+                    </span>
+                    <input 
+                      id="login-username-input"
+                      type="text" 
+                      formControlName="username" 
+                      placeholder="Ex: cliente" 
+                      class="w-full pl-9 pr-3.5 py-2 border border-zinc-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div class="space-y-1">
+                  <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Senha de Acesso</span>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-400 pointer-events-none">
+                      <mat-icon class="text-sm">lock</mat-icon>
+                    </span>
+                    <input 
+                      id="login-password-input"
+                      type="password" 
+                      formControlName="password" 
+                      placeholder="••••••••" 
+                      class="w-full pl-9 pr-3.5 py-2 border border-zinc-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  class="w-full py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer border-none"
+                >
+                  <mat-icon class="text-sm">login</mat-icon>
+                  Acessar Minha Conta
+                </button>
+              </form>
+            }
+
+            @if (authMode() === 'register') {
+              <form [formGroup]="registerForm" (ngSubmit)="handleRegister()" class="space-y-3">
+                <div class="space-y-1">
+                  <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Nome Completo</span>
+                  <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-zinc-400 pointer-events-none">
+                      <mat-icon class="text-sm">person</mat-icon>
+                    </span>
+                    <input 
+                      id="register-name-input"
+                      type="text" 
+                      formControlName="name" 
+                      placeholder="Ex: Maria Alice" 
+                      class="w-full pl-9 pr-3.5 py-2 border border-zinc-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="space-y-1">
+                    <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">WhatsApp</span>
+                    <input 
+                      id="register-phone-input"
+                      type="text" 
+                      formControlName="phone" 
+                      placeholder="11999998888" 
+                      class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white"
+                    />
+                  </div>
+                  <div class="space-y-1">
+                    <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">E-mail</span>
+                    <input 
+                      id="register-email-input"
+                      type="email" 
+                      formControlName="email" 
+                      placeholder="maria@email.com" 
+                      class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="space-y-1">
+                    <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Nome de Usuário</span>
+                    <input 
+                      id="register-user-input"
+                      type="text" 
+                      formControlName="username" 
+                      placeholder="m_alice" 
+                      class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white"
+                    />
+                  </div>
+                  <div class="space-y-1">
+                    <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Senha</span>
+                    <input 
+                      id="register-pass-input"
+                      type="password" 
+                      formControlName="password" 
+                      placeholder="••••••••" 
+                      class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white"
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer border-none"
+                >
+                  <mat-icon class="text-sm">person_add</mat-icon>
+                  Criar Minha Conta & Entrar
+                </button>
+              </form>
+            }
+
+            @if (authError()) {
+              <div class="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2 animate-fade-in">
+                <mat-icon class="text-sm">error_outline</mat-icon>
+                <span class="font-medium">{{ authError() }}</span>
+              </div>
+            }
+
+            @if (authSuccess()) {
+              <div class="p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-xl flex items-center gap-2 animate-fade-in">
+                <mat-icon class="text-sm">check_circle</mat-icon>
+                <span class="font-medium">{{ authSuccess() }}</span>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- LOGGED IN VIEWPORTS -->
+      @if (store.currentUser(); as user) {
+        <section class="bg-zinc-950 text-white rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-zinc-800 relative overflow-hidden shadow-xl">
+          <!-- Ambient gradient background light -->
+          <div class="absolute -right-12 -top-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div class="flex items-center gap-4 relative z-10 flex-1 min-w-0">
+            <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-emerald-400 shrink-0 shadow-md">
+              <mat-icon class="text-3xl">account_circle</mat-icon>
+            </div>
+            <div class="space-y-2 flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-[9px] bg-zinc-900 text-emerald-400 border border-emerald-500/35 px-2.5 py-1 rounded-full font-black uppercase tracking-wider leading-none">
+                  {{ user.role === 'admin' ? 'Painel Técnico Administrador' : 'Portal Exclusivo do Cliente' }}
+                </span>
+              </div>
+              <h2 class="font-display font-extrabold text-2xl md:text-3xl tracking-tight text-white leading-snug m-0 p-0">{{ user.name }}</h2>
+              <p class="text-xs text-zinc-400 m-0">Usuário: <span class="text-zinc-200 font-semibold font-mono">{{ user.username }}</span> @if (user.email) { • E-mail: <span class="text-zinc-300 font-medium">{{ user.email }}</span> }</p>
+            </div>
+          </div>
+          
+          <button 
+            type="button"
+            (click)="handleLogout()" 
+            class="px-4.5 py-2.5 bg-zinc-900 hover:bg-red-950/40 hover:text-red-400 border border-zinc-800 hover:border-red-900/60 text-zinc-300 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all duration-300 cursor-pointer w-full md:w-auto justify-center"
+          >
+            <mat-icon class="text-sm">logout</mat-icon>
+            Sair da Conta
+          </button>
+        </section>
+
+        <!-- CLIENT VIEWPORT -->
+        @if (user.role === 'client') {
+          <!-- Client Analytics Bento Section -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in">
+            <div class="bg-white p-5 rounded-3xl border border-zinc-200/80 shadow-xs flex items-center gap-4 hover:shadow-md transition-all duration-300">
+              <div class="w-11 h-11 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-500 shrink-0">
+                <mat-icon>pending_actions</mat-icon>
+              </div>
+              <div>
+                <span class="block text-[10px] text-zinc-400 uppercase font-extrabold tracking-wider">Ordens Ativas</span>
+                <p class="text-xl font-black text-zinc-900 font-mono leading-none mt-1">{{ clientStats().active }}</p>
+              </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-3xl border border-zinc-200/80 shadow-xs flex items-center gap-4 hover:shadow-md transition-all duration-300">
+              <div class="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500 shrink-0">
+                <mat-icon>task_alt</mat-icon>
+              </div>
+              <div>
+                <span class="block text-[10px] text-zinc-400 uppercase font-extrabold tracking-wider">Serviços Concluídos</span>
+                <p class="text-xl font-black text-zinc-900 font-mono leading-none mt-1">{{ clientStats().completed }}</p>
+              </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-3xl border border-zinc-200/80 shadow-xs flex items-center gap-4 hover:shadow-md transition-all duration-300">
+              <div class="w-11 h-11 rounded-2xl bg-zinc-950 text-white flex items-center justify-center shrink-0">
+                <mat-icon class="text-emerald-400">payments</mat-icon>
+              </div>
+              <div>
+                <span class="block text-[10px] text-zinc-400 uppercase font-extrabold tracking-wider">Total Concluído</span>
+                <p class="text-xl font-black text-emerald-600 font-mono leading-none mt-1">{{ clientStats().totalSpent | currency:'BRL' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-8 space-y-6">
+              <div class="flex justify-between items-center">
+                <div class="space-y-0.5">
+                  <h3 class="font-display font-extrabold text-xl text-zinc-900 tracking-tight">Histórico de Manutenções</h3>
+                  <p class="text-xs text-zinc-400">Acompanhe o andamento detalhado e status dos seus aparelhos.</p>
+                </div>
+                <button 
+                  type="button"
+                  (click)="openClientCreateModal()" 
+                  class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none"
+                >
+                  <mat-icon class="text-sm">add_circle</mat-icon>
+                  Novo Agendamento
+                </button>
+              </div>
+
+              <div class="space-y-5">
+                @for (rep of myRepairs(); track rep.id) {
+                  <div class="bg-white rounded-3xl border border-zinc-200/80 p-6 shadow-sm hover:shadow-md hover:border-zinc-300 transition-all duration-300 space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-zinc-950 text-white text-[10px] font-mono font-bold rounded-lg shadow-sm border border-zinc-800">
+                            <span class="w-1 h-1 rounded-full bg-emerald-400 animate-pulse"></span>
+                            {{ rep.id }}
+                          </span>
+                          <span class="text-[10px] text-zinc-400 font-semibold tracking-wide bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded-md">
+                            Aberto em {{ rep.createdAt | date:'dd/MM/yyyy' }}
+                          </span>
+                        </div>
+                        <h4 class="font-display font-black text-lg text-zinc-900 leading-tight">{{ rep.deviceType }} - {{ rep.deviceBrandModel }}</h4>
+                      </div>
+
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-extrabold rounded-full border uppercase tracking-wider text-center shrink-0 shadow-xs transition-all duration-300"
+                        [class]="
+                          rep.status === 'Pronto para Retirada' ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' :
+                          rep.status === 'Entregue' ? 'bg-zinc-800/40 border-zinc-700/50 text-zinc-400' :
+                          rep.status === 'Em Reparo' ? 'bg-amber-500/15 border-amber-500/30 text-amber-400' :
+                          'bg-zinc-800/40 border-zinc-700/50 text-zinc-400'
+                        ">
+                        <span class="w-1.5 h-1.5 rounded-full"
+                          [class]="
+                            rep.status === 'Pronto para Retirada' ? 'bg-emerald-400 animate-pulse' :
+                            rep.status === 'Entregue' ? 'bg-zinc-500' :
+                            rep.status === 'Em Reparo' ? 'bg-amber-400 animate-pulse' :
+                            'bg-zinc-500'
+                          "></span>
+                        {{ rep.status }}
+                      </span>
+                    </div>
+
+                    <!-- Defect summary -->
+                    <div class="bg-zinc-50 p-3.5 rounded-2xl border border-zinc-100 flex gap-2 text-xs text-zinc-600">
+                      <mat-icon class="text-zinc-400 text-sm mt-0.5 shrink-0">report_problem</mat-icon>
+                      <p class="leading-relaxed">
+                        <strong class="text-zinc-800 font-bold">Defeito relatado:</strong> {{ rep.description }}
+                      </p>
+                    </div>
+
+                    @if (rep.technicianComments) {
+                      <div class="bg-emerald-50/20 p-3.5 rounded-2xl border border-emerald-100/50 flex gap-2 text-xs text-zinc-600 italic">
+                        <mat-icon class="text-emerald-500 text-sm mt-0.5 shrink-0">engineering</mat-icon>
+                        <p class="leading-relaxed">
+                          <strong class="text-emerald-800 font-bold not-italic">Laudo do Técnico:</strong> "{{ rep.technicianComments }}"
+                        </p>
+                      </div>
+                    }
+
+                    <!-- Progress Stepper Tracker -->
+                    <div class="py-4 border-t border-b border-zinc-100/70 my-2">
+                      <div class="flex items-center justify-between text-[10px] text-zinc-400 font-bold uppercase tracking-wider mb-3">
+                        <span class="text-zinc-500 flex items-center gap-1">
+                          <mat-icon class="text-xs text-zinc-400">timeline</mat-icon>
+                          Linha do Tempo
+                        </span>
+                        <span class="text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20 font-extrabold text-[10px]">{{ rep.status }}</span>
+                      </div>
+                      
+                      <!-- Stepper Tracks -->
+                      <div class="grid grid-cols-5 gap-1 relative select-none">
+                        <!-- Step 1: Recebido -->
+                        <div class="flex flex-col items-center text-center space-y-1">
+                          <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300"
+                            [class]="
+                              rep.status === 'Recebido' ? 'bg-emerald-500 text-white ring-4 ring-emerald-100 font-black' :
+                              'bg-emerald-100 text-emerald-700'
+                            ">
+                            @if (rep.status !== 'Recebido') {
+                              <mat-icon class="text-xs">check</mat-icon>
+                            } @else {
+                              1
+                            }
+                          </div>
+                          <span class="text-[9px] font-extrabold text-emerald-600">Aberto</span>
+                        </div>
+
+                        <!-- Step 2: Diagnóstico -->
+                        <div class="flex flex-col items-center text-center space-y-1">
+                          <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300"
+                            [class]="
+                              rep.status === 'Em Diagnóstico' ? 'bg-emerald-500 text-white ring-4 ring-emerald-100 font-black' :
+                              (rep.status !== 'Recebido' ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-400')
+                            ">
+                            @if (rep.status !== 'Recebido' && rep.status !== 'Em Diagnóstico') {
+                              <mat-icon class="text-xs">check</mat-icon>
+                            } @else {
+                              2
+                            }
+                          </div>
+                          <span class="text-[9px] font-bold" [class]="rep.status !== 'Recebido' ? 'text-emerald-600 font-black' : 'text-zinc-400'">Diagnóstico</span>
+                        </div>
+
+                        <!-- Step 3: Reparo -->
+                        <div class="flex flex-col items-center text-center space-y-1">
+                          <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300"
+                            [class]="
+                              rep.status === 'Em Reparo' ? 'bg-emerald-500 text-white ring-4 ring-emerald-100 font-black' :
+                              (rep.status !== 'Recebido' && rep.status !== 'Em Diagnóstico' ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-400')
+                            ">
+                            @if (rep.status === 'Pronto para Retirada' || rep.status === 'Entregue') {
+                              <mat-icon class="text-xs">check</mat-icon>
+                            } @else {
+                              3
+                            }
+                          </div>
+                          <span class="text-[9px] font-bold" [class]="(rep.status !== 'Recebido' && rep.status !== 'Em Diagnóstico') ? 'text-emerald-600 font-black' : 'text-zinc-400'">Reparo</span>
+                        </div>
+
+                        <!-- Step 4: Retirada -->
+                        <div class="flex flex-col items-center text-center space-y-1">
+                          <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300"
+                            [class]="
+                              rep.status === 'Pronto para Retirada' ? 'bg-emerald-500 text-white ring-4 ring-emerald-100 font-black' :
+                              (rep.status === 'Entregue' ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-400')
+                            ">
+                            @if (rep.status === 'Entregue') {
+                              <mat-icon class="text-xs">check</mat-icon>
+                            } @else {
+                              4
+                            }
+                          </div>
+                          <span class="text-[9px] font-bold" [class]="(rep.status === 'Pronto para Retirada' || rep.status === 'Entregue') ? 'text-emerald-600 font-black' : 'text-zinc-400'">Pronto</span>
+                        </div>
+
+                        <!-- Step 5: Entregue -->
+                        <div class="flex flex-col items-center text-center space-y-1">
+                          <div class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] transition-all duration-300"
+                            [class]="
+                              rep.status === 'Entregue' ? 'bg-zinc-950 text-white ring-4 ring-zinc-200 font-black' :
+                              'bg-zinc-100 text-zinc-400'
+                            ">
+                            5
+                          </div>
+                          <span class="text-[9px] font-bold" [class]="rep.status === 'Entregue' ? 'text-zinc-950 font-black' : 'text-zinc-400'">Entregue</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Foot details and actions -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-2 text-xs">
+                      <div class="flex items-baseline gap-1.5 bg-zinc-50 px-3 py-1.5 rounded-xl border border-zinc-100">
+                        <span class="text-zinc-400 text-[10px] uppercase font-bold tracking-wider">Total Consolidado:</span>
+                        <span class="text-base font-black text-emerald-600 font-mono">{{ rep.finalPrice | currency:'BRL' }}</span>
+                      </div>
+
+                      <div class="flex gap-2 w-full sm:w-auto">
+                        <button 
+                          type="button"
+                          (click)="openPrintBudgetModal(rep)"
+                          class="flex-1 sm:flex-initial px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer border-none"
+                        >
+                          <mat-icon class="text-sm">print</mat-icon>
+                          Imprimir O.S.
+                        </button>
+
+                        <button 
+                          type="button"
+                          (click)="quickTrack(rep.id)"
+                          class="flex-1 sm:flex-initial px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-bold rounded-xl flex items-center justify-center gap-1 transition-all duration-300 cursor-pointer border-none"
+                        >
+                          <mat-icon class="text-sm text-zinc-600">travel_explore</mat-icon>
+                          Rastrear Código
+                        </button>
+
+                        @if (rep.status === 'Recebido' || rep.status === 'Em Diagnóstico') {
+                          <button 
+                            type="button"
+                            (click)="openClientEditModal(rep)"
+                            class="flex-1 sm:flex-initial px-4 py-2 border border-zinc-200 hover:border-zinc-800 text-zinc-700 hover:text-zinc-900 font-bold rounded-xl flex items-center justify-center gap-1 transition-all duration-300 cursor-pointer bg-white"
+                          >
+                            <mat-icon class="text-sm">edit_note</mat-icon>
+                            Alterar
+                          </button>
+                          <button 
+                            type="button"
+                            (click)="deleteClientRepair(rep.id)"
+                            class="p-2 hover:bg-red-50 text-red-500 hover:text-red-700 rounded-xl transition-all duration-300 flex items-center justify-center border-none bg-transparent"
+                            title="Cancelar Agendamento"
+                          >
+                            <mat-icon class="text-sm">delete_sweep</mat-icon>
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                } @empty {
+                  <div class="py-16 text-center space-y-4 bg-white border border-dashed border-zinc-200 rounded-3xl p-6">
+                    <div class="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mx-auto text-zinc-300 border border-zinc-100">
+                      <mat-icon class="text-3xl">history_toggle_off</mat-icon>
+                    </div>
+                    <div class="space-y-1 max-w-sm mx-auto">
+                      <h3 class="font-display font-bold text-zinc-900 text-base">Nenhum reparo no seu histórico</h3>
+                      <p class="text-xs text-zinc-500">Agende seu primeiro orçamento para que nossa equipe avalie seu aparelho em tempo real!</p>
+                    </div>
+                    <button 
+                      type="button"
+                      (click)="openClientCreateModal()"
+                      class="px-4 py-2 bg-zinc-950 text-white font-bold text-xs rounded-xl hover:bg-zinc-800 transition-all border-none cursor-pointer"
+                    >
+                      Agendar Agora
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Client Info Widget -->
+            <div class="lg:col-span-4 space-y-6">
+              <div class="bg-white rounded-3xl border border-zinc-200/80 shadow-sm overflow-hidden hover:shadow-md transition-all duration-300">
+                <div class="bg-zinc-50 p-6 border-b border-zinc-100 flex flex-col items-center text-center space-y-3">
+                  <div class="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-500/20 flex items-center justify-center text-emerald-600 text-2xl font-bold shadow-xs">
+                    {{ user.name.slice(0, 2).toUpperCase() }}
+                  </div>
+                  <div>
+                    <h4 class="font-display font-bold text-zinc-900 text-base leading-snug">{{ user.name }}</h4>
+                    <span class="text-[10px] text-zinc-400 uppercase tracking-widest font-extrabold">Cliente Especial</span>
+                  </div>
+                </div>
+
+                <div class="p-5 space-y-4 text-xs">
+                  <div class="flex items-center gap-3 text-zinc-600">
+                    <div class="w-8 h-8 rounded-xl bg-zinc-50 flex items-center justify-center text-zinc-500 shrink-0">
+                      <mat-icon class="text-sm">phone</mat-icon>
+                    </div>
+                    <div>
+                      <span class="text-[9px] text-zinc-400 block uppercase font-bold">WhatsApp / Telefone</span>
+                      <span class="text-zinc-800 font-mono font-bold">{{ user.phone }}</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3 text-zinc-600">
+                    <div class="w-8 h-8 rounded-xl bg-zinc-50 flex items-center justify-center text-zinc-500 shrink-0">
+                      <mat-icon class="text-sm">alternate_email</mat-icon>
+                    </div>
+                    <div>
+                      <span class="text-[9px] text-zinc-400 block uppercase font-bold">E-mail</span>
+                      <span class="text-zinc-800 font-medium truncate max-w-[180px] block">{{ user.email }}</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3 text-zinc-600">
+                    <div class="w-8 h-8 rounded-xl bg-zinc-50 flex items-center justify-center text-zinc-500 shrink-0">
+                      <mat-icon class="text-sm">fingerprint</mat-icon>
+                    </div>
+                    <div>
+                      <span class="text-[9px] text-zinc-400 block uppercase font-bold">ID do Usuário</span>
+                      <span class="text-zinc-800 font-mono text-[10px]">{{ user.id }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- TECHNICIAN ADMIN PANEL VIEWPORT -->
+        @if (user.role === 'admin') {
+          <div class="space-y-12">
+            <!-- Counters -->
+            <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs space-y-2">
+                <span class="block text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Reparos Pendentes</span>
+                <p class="text-3xl font-extrabold text-zinc-900 font-mono">{{ techStats().pending }}</p>
+              </div>
+              <div class="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs space-y-2">
+                <span class="block text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Prontos Retirada</span>
+                <p class="text-3xl font-extrabold text-emerald-500 font-mono">{{ techStats().ready }}</p>
+              </div>
+              <div class="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs space-y-2">
+                <span class="block text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Faturamento Concluído</span>
+                <p class="text-3xl font-extrabold text-emerald-600 font-mono">{{ techStats().totalEarnings | currency:'BRL' }}</p>
+              </div>
+              <div class="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs space-y-2">
+                <span class="block text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Alerta Estoque</span>
+                <p class="text-3xl font-extrabold text-red-500 font-mono">{{ techStats().lowStockParts }}</p>
+              </div>
+            </section>
+
+            <!-- CRUD Workspaces -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              
+              <!-- Left side: All repairs dashboard -->
+              <div class="lg:col-span-7 space-y-6">
+                <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
+                  <h3 class="font-display font-extrabold text-xl text-zinc-900">Todas as Ordens de Serviço (CRUD)</h3>
+                  <span class="text-xs text-zinc-400 font-medium font-mono">{{ store.repairs().length }} Ordens</span>
+                </div>
+
+                <div class="space-y-4">
+                  @for (rep of store.repairs(); track rep.id) {
+                    <div class="bg-white rounded-2xl border border-zinc-200/80 p-5 shadow-xs space-y-4 animate-fade-in">
+                      <div class="flex justify-between items-start gap-4">
+                        <div class="space-y-1">
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-2 py-0.5 bg-zinc-900 text-white text-xs font-mono font-bold rounded">
+                              {{ rep.id }}
+                            </span>
+                            <span class="text-[10px] text-zinc-400">Cliente: <strong class="text-zinc-800">{{ rep.clientName }}</strong></span>
+                          </div>
+                          <h4 class="font-display font-bold text-base text-zinc-950">{{ rep.deviceType }} - {{ rep.deviceBrandModel }}</h4>
+                        </div>
+
+                        <span class="px-2.5 py-1 text-[11px] font-extrabold rounded-lg border uppercase tracking-wider shadow-xs transition-all duration-200"
+                          [class]="
+                            rep.status === 'Pronto para Retirada' ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' :
+                            rep.status === 'Entregue' ? 'bg-zinc-800/40 border-zinc-700/50 text-zinc-400' :
+                            rep.status === 'Em Reparo' ? 'bg-amber-500/15 border-amber-500/30 text-amber-400' :
+                            'bg-zinc-800/40 border-zinc-700/50 text-zinc-400'
+                          ">
+                          {{ rep.status }}
+                        </span>
+                      </div>
+
+                      <p class="text-xs text-zinc-600 leading-relaxed bg-zinc-50 p-3 rounded-lg border border-zinc-100">
+                        <strong>Defeito:</strong> {{ rep.description }}
+                      </p>
+
+                      @if (rep.partsUsed.length > 0) {
+                        <div class="text-[11px] text-zinc-500 bg-zinc-50/25 p-2 rounded-xl border">
+                          <span class="font-bold">Peças Inclusas:</span>
+                          @for (p of rep.partsUsed; track $index) {
+                            <span class="inline-block bg-zinc-100 text-zinc-700 px-2 py-0.5 rounded mr-1.5 text-[10px] my-0.5">
+                              {{ p.name }} ({{ p.price | currency:'BRL' }})
+                            </span>
+                          }
+                        </div>
+                      }
+
+                      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-3 border-t border-zinc-100 text-xs">
+                        <div class="flex gap-4">
+                          <p class="text-zinc-400">Mão de obra: <strong class="text-zinc-700">{{ rep.estimatedPrice | currency:'BRL' }}</strong></p>
+                          <p class="text-zinc-400">Preço Final: <strong class="text-emerald-600 text-sm font-mono">{{ rep.finalPrice | currency:'BRL' }}</strong></p>
+                        </div>
+
+                        <div class="flex gap-2 w-full sm:w-auto">
+                          <button 
+                            type="button"
+                            (click)="openPrintBudgetModal(rep)"
+                            class="px-2.5 py-1.5 border border-zinc-700/60 hover:border-emerald-500 text-zinc-400 hover:text-emerald-400 rounded-lg transition-all flex items-center justify-center bg-transparent cursor-pointer"
+                            title="Imprimir Orçamento (PDF)"
+                          >
+                            <mat-icon class="text-xs">print</mat-icon>
+                          </button>
+                          <button 
+                            type="button"
+                            (click)="openTechEditModal(rep)"
+                            class="flex-1 sm:flex-initial px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold rounded-lg flex items-center justify-center gap-1 transition-all cursor-pointer text-[11px] border-none"
+                          >
+                            <mat-icon class="text-xs">edit</mat-icon>
+                            Atualizar O.S.
+                          </button>
+                          <button 
+                            type="button"
+                            (click)="store.deleteRepair(rep.id)"
+                            class="px-2 py-1.5 border border-zinc-200 hover:border-red-600 text-zinc-400 hover:text-red-600 rounded-lg transition-all flex items-center justify-center bg-transparent"
+                            title="Deletar O.S."
+                          >
+                            <mat-icon class="text-xs">delete</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Right side: Catalog & Services manager -->
+              <div class="lg:col-span-5 space-y-8 border-t lg:border-t-0 lg:border-l lg:pl-8 border-zinc-200 pt-8 lg:pt-0">
+                
+                <!-- Parts CRUD -->
+                <div class="space-y-6">
+                  <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
+                    <h3 class="font-display font-extrabold text-xl text-zinc-900">Gerenciar Peças (CRUD)</h3>
+                    <button 
+                      type="button"
+                      (click)="openTechPartModal(null)" 
+                      class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center gap-1 transition-all cursor-pointer border-none"
+                    >
+                      <mat-icon class="text-sm">add</mat-icon>
+                      Nova Peça
+                    </button>
+                  </div>
+
+                  <div class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                    @for (part of store.parts(); track part.id) {
+                      <div class="bg-white rounded-xl border border-zinc-200/80 p-3 flex gap-3 shadow-xs items-center justify-between">
+                        <div class="flex gap-3 items-center min-w-0">
+                          <img [src]="part.imageUrl" alt="Peça" class="w-12 h-12 rounded-lg object-cover border border-zinc-100 flex-shrink-0" referrerpolicy="no-referrer" />
+                          <div class="min-w-0">
+                            <h4 class="font-bold text-xs text-zinc-900 truncate">{{ part.name }}</h4>
+                            <div class="flex gap-2 items-center text-[10px] text-zinc-500 mt-0.5">
+                              <span class="font-bold text-emerald-600 font-mono">{{ part.price | currency:'BRL' }}</span>
+                              <span>•</span>
+                              <span [class]="part.stock <= 3 ? 'text-red-500 font-bold' : 'text-zinc-500'">Estoque: {{ part.stock }}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="flex gap-1 flex-shrink-0">
+                          <button 
+                            type="button"
+                            (click)="openTechPartModal(part)" 
+                            class="p-1 hover:bg-zinc-100 text-zinc-600 rounded-md transition-all flex items-center border-none bg-transparent"
+                            title="Editar"
+                          >
+                            <mat-icon class="text-xs">edit</mat-icon>
+                          </button>
+                          <button 
+                            type="button"
+                            (click)="deletePart(part.id)" 
+                            class="p-1 hover:bg-red-50 text-red-500 rounded-md transition-all flex items-center border-none bg-transparent"
+                            title="Remover"
+                          >
+                            <mat-icon class="text-xs">delete</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Pre-determined Labor Services CRUD -->
+                <div class="space-y-6 pt-6 border-t border-zinc-200">
+                  <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
+                    <h3 class="font-display font-extrabold text-xl text-zinc-900">Mão de Obra (CRUD)</h3>
+                    <button 
+                      type="button"
+                      (click)="openTechLaborServiceModal(null)" 
+                      class="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white font-bold text-xs rounded-xl flex items-center gap-1 transition-all cursor-pointer border-none"
+                    >
+                      <mat-icon class="text-sm">add</mat-icon>
+                      Novo Serviço
+                    </button>
+                  </div>
+
+                  <div class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                    @for (svc of store.laborServices(); track svc.id) {
+                      <div class="bg-white rounded-xl border border-zinc-200/80 p-3.5 flex gap-3 shadow-xs items-center justify-between">
+                        <div class="flex gap-3 items-center min-w-0">
+                          <div class="w-9 h-9 rounded-lg bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500 flex-shrink-0">
+                            <mat-icon class="text-base">handyman</mat-icon>
+                          </div>
+                          <div class="min-w-0">
+                            <h4 class="font-bold text-xs text-zinc-900 truncate">{{ svc.name }}</h4>
+                            <p class="text-[10px] text-zinc-400 truncate max-w-[170px] mt-0.5" [title]="svc.description">{{ svc.description }}</p>
+                            <div class="flex gap-2 items-center text-[10px] text-zinc-500 mt-1">
+                              <span class="font-bold text-emerald-600 font-mono">{{ svc.price | currency:'BRL' }}</span>
+                              <span>•</span>
+                              <span>Ref: {{ svc.id }}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="flex gap-1 flex-shrink-0">
+                          <button 
+                            type="button"
+                            (click)="openTechLaborServiceModal(svc)" 
+                            class="p-1 hover:bg-zinc-100 text-zinc-600 rounded-md transition-all flex items-center border-none bg-transparent"
+                            title="Editar"
+                          >
+                            <mat-icon class="text-xs">edit</mat-icon>
+                          </button>
+                          <button 
+                            type="button"
+                            (click)="deleteLaborService(svc.id)" 
+                            class="p-1 hover:bg-red-50 text-red-500 rounded-md transition-all flex items-center border-none bg-transparent"
+                            title="Remover"
+                          >
+                            <mat-icon class="text-xs">delete</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</main>
+
+<!-- ==================== SIDEBAR SHOPPING CART SLIDE OVER ==================== -->
+@if (isCartOpen()) {
+  <div class="fixed inset-0 z-50 overflow-hidden animate-fade-in" role="dialog" aria-modal="true">
+    <button type="button" (click)="isCartOpen.set(false)" class="absolute inset-0 w-full h-full text-left bg-black/40 backdrop-blur-xs transition-opacity duration-300 border-none cursor-default" aria-label="Fechar Carrinho"></button>
+
+    <div class="absolute inset-y-0 right-0 max-w-full flex pl-10">
+      <div class="w-screen max-w-md bg-white shadow-2xl flex flex-col justify-between animate-slide-in h-full">
+        <div class="p-6 border-b border-zinc-100 flex items-center justify-between bg-zinc-900 text-white">
+          <div class="flex items-center gap-2">
+            <mat-icon class="text-emerald-400">shopping_cart</mat-icon>
+            <h2 class="font-display font-extrabold text-lg">Seu Carrinho</h2>
+          </div>
+          <button 
+            type="button"
+            (click)="isCartOpen.set(false)" 
+            class="text-zinc-400 hover:text-white p-1.5 hover:bg-zinc-800 rounded-xl transition-all cursor-pointer border-none bg-transparent"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 space-y-4">
+          @for (item of store.cart(); track item.part.id) {
+            <div class="flex items-center justify-between gap-4 p-3 border border-zinc-100 rounded-xl bg-zinc-50/50">
+              <img [src]="item.part.imageUrl" alt="Peça" class="w-12 h-12 rounded-lg object-cover border border-zinc-200" referrerpolicy="no-referrer" />
+              
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-xs text-zinc-900 truncate" [title]="item.part.name">{{ item.part.name }}</h4>
+                <div class="text-xs font-extrabold text-zinc-950 font-mono mt-1">{{ item.part.price | currency:'BRL' }}</div>
+              </div>
+
+              <div class="flex flex-col items-center gap-1">
+                <div class="flex items-center border border-zinc-200 rounded-lg bg-white">
+                  <button type="button" (click)="store.updateCartQuantity(item.part.id, -1)" class="px-2 py-0.5 hover:bg-zinc-50 text-zinc-600 rounded-l-lg font-bold text-xs cursor-pointer border-none bg-transparent">-</button>
+                  <span class="px-2 py-0.5 text-xs font-mono font-bold text-zinc-800">{{ item.quantity }}</span>
+                  <button type="button" (click)="store.updateCartQuantity(item.part.id, 1)" class="px-2 py-0.5 hover:bg-zinc-50 text-zinc-600 rounded-r-lg font-bold text-xs cursor-pointer border-none bg-transparent">+</button>
+                </div>
+                <button type="button" (click)="store.removeFromCart(item.part.id)" class="text-[10px] text-zinc-400 hover:text-red-500 hover:underline cursor-pointer border-none bg-transparent">Remover</button>
+              </div>
+            </div>
+          } @empty {
+            <div class="h-full flex flex-col items-center justify-center text-center space-y-3 py-16">
+              <mat-icon class="text-zinc-300 text-6xl">shopping_cart</mat-icon>
+              <h3 class="font-display font-bold text-zinc-900 text-base">Seu carrinho está vazio</h3>
+              <p class="text-xs text-zinc-500 max-w-xs">Navegue em nosso catálogo de peças e faça upgrades de alto desempenho!</p>
+            </div>
+          }
+        </div>
+
+        <div class="p-6 border-t border-zinc-100 bg-zinc-50/50 space-y-4">
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs text-zinc-500">
+              <span>Subtotal:</span>
+              <span>{{ store.cartTotal() | currency:'BRL' }}</span>
+            </div>
+            <div class="flex justify-between font-bold text-zinc-950 text-sm pt-2 border-t border-zinc-200">
+              <span>Total Carrinho:</span>
+              <span class="text-emerald-600 font-mono text-base">{{ store.cartTotal() | currency:'BRL' }}</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <button 
+              type="button"
+              [disabled]="store.cart().length === 0"
+              (click)="openCartWhatsAppCheckout()"
+              class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer uppercase border-none"
+            >
+              <mat-icon class="text-sm">chat</mat-icon>
+              Comprar via WhatsApp
+            </button>
+            <button 
+              type="button"
+              (click)="isCartOpen.set(false)"
+              class="w-full py-2.5 bg-white hover:bg-zinc-100 border border-zinc-200 text-zinc-700 font-bold text-xs rounded-xl transition-all cursor-pointer text-center"
+            >
+              Continuar Comprando
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ==================== MODALS INJECTION LAYER ==================== -->
+
+<!-- Modal 1: Budget Success -->
+@if (activeModal() === 'budget_success') {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <button type="button" (click)="activeModal.set('none')" class="absolute inset-0 w-full h-full text-left bg-black/60 backdrop-blur-xs border-none cursor-default" aria-label="Fechar Modal"></button>
+    
+    @if (justCreatedRepair(); as repair) {
+      <div class="relative bg-white max-w-lg w-full rounded-3xl overflow-hidden shadow-2xl p-6 sm:p-8 space-y-6 animate-scale-up">
+        <div class="text-center space-y-2">
+          <div class="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto border border-emerald-100 shadow-xs">
+            <mat-icon class="text-3xl">verified</mat-icon>
+          </div>
+          <h2 class="font-display font-extrabold text-2xl text-zinc-900 tracking-tight">O.S. Gerada com Sucesso!</h2>
+          <p class="text-xs text-zinc-500">Acompanhe seu status usando o código exclusivo:</p>
+          <div class="inline-block px-4 py-1.5 bg-zinc-900 text-white rounded-xl font-mono font-bold text-base shadow-sm tracking-widest my-2">
+            {{ repair.id }}
+          </div>
+        </div>
+
+        <div class="bg-zinc-50 border border-zinc-100 rounded-2xl p-4 text-xs space-y-2">
+          <p class="text-zinc-500"><strong>Aparelho:</strong> <span class="text-zinc-800">{{ repair.deviceType }} - {{ repair.deviceBrandModel }}</span></p>
+          @if (repair.description) {
+            <p class="text-zinc-500"><strong>Defeito/Serviço:</strong> <span class="text-zinc-800">{{ repair.description }}</span></p>
+          }
+        </div>
+
+        <!-- Notificações Automáticas Enviadas -->
+        <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl space-y-3">
+          <h4 class="font-bold text-xs text-emerald-400 flex items-center gap-1.5 uppercase tracking-wider">
+            <mat-icon class="text-base animate-pulse">settings_suggest</mat-icon>
+            Notificações Automáticas Enviadas
+          </h4>
+          
+          <div class="space-y-2 text-xs">
+            <div class="flex items-start gap-2 text-zinc-300">
+              <mat-icon class="text-sm text-emerald-400 mt-0.5">mail</mat-icon>
+              <div>
+                <p class="font-semibold text-zinc-100">E-mail enviado para o suporte!</p>
+                <p class="text-[10px] text-zinc-400">Notificado em: <span class="font-mono text-emerald-400">suporte@infotech.com.br</span></p>
+              </div>
+            </div>
+            
+            <div class="flex items-start gap-2 text-zinc-300">
+              <mat-icon class="text-sm text-emerald-400 mt-0.5">chat_bubble</mat-icon>
+              <div>
+                <p class="font-semibold text-zinc-100">WhatsApp enviado para o suporte!</p>
+                <p class="text-[10px] text-zinc-400">Notificação automática: <span class="font-mono text-emerald-400">+55 (11) 98888-7777</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Credenciais do Cliente -->
+        @if (createdCredentials(); as creds) {
+          <div class="p-4 bg-zinc-950 text-white rounded-2xl space-y-3 border border-zinc-800 animate-fade-in text-xs">
+            <div class="flex items-center gap-1.5 text-emerald-400 font-bold uppercase tracking-wider">
+              <mat-icon class="text-base">account_circle</mat-icon>
+              Sua Conta de Acesso Criada!
+            </div>
+            <p class="text-zinc-300 leading-relaxed text-[11px]">
+              @if (creds.auto) {
+                Para sua comodidade, geramos automaticamente seus dados de acesso para você acompanhar esta solicitação futuramente:
+              } @else {
+                Sua conta de cliente foi criada com as credenciais que você definiu:
+              }
+            </p>
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 grid grid-cols-2 gap-2 text-xs font-mono">
+              <div>
+                <span class="text-[9px] text-zinc-500 block uppercase font-sans">Usuário</span>
+                <span class="font-bold text-emerald-400 text-sm">{{ creds.username }}</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-zinc-500 block uppercase font-sans">Senha</span>
+                <span class="font-bold text-emerald-400 text-sm">{{ creds.password }}</span>
+              </div>
+            </div>
+            <p class="text-zinc-400 text-[10px] leading-snug">
+              Você já foi conectado automaticamente! Utilize estes dados para logar futuramente na aba <strong>Área do Cliente</strong>.
+            </p>
+          </div>
+        }
+
+        <div class="space-y-3">
+          <button 
+            type="button"
+            (click)="activeModal.set('none'); quickTrack(repair.id)"
+            class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer uppercase border-none"
+          >
+            <mat-icon class="text-sm">search</mat-icon>
+            Ir Para Rastreamento
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+<!-- Modal 2: Submit Testimonial -->
+@if (activeModal() === 'testimonial') {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+    <button type="button" (click)="activeModal.set('none')" class="absolute inset-0 w-full h-full text-left bg-black/60 backdrop-blur-xs border-none cursor-default" aria-label="Fechar Modal"></button>
+
+    <div class="relative bg-white max-w-md w-full rounded-3xl overflow-hidden shadow-2xl p-6 space-y-5 animate-scale-up">
+      <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
+        <h3 class="font-display font-extrabold text-lg text-zinc-950">Deixar sua Avaliação</h3>
+        <button type="button" (click)="activeModal.set('none')" class="p-1 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-zinc-800 transition-all border-none bg-transparent">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <form [formGroup]="testimonialForm" (ngSubmit)="submitTestimonial()" class="space-y-4">
+        <div class="space-y-1.5 text-center">
+          <span class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider">Como foi sua experiência?</span>
+          <div class="flex justify-center text-amber-400 gap-1 my-2">
+            @for (star of [1,2,3,4,5]; track $index) {
+              <button 
+                type="button"
+                (click)="setRating($index + 1)" 
+                class="hover:scale-110 transition-all cursor-pointer p-1 border-none bg-transparent"
+              >
+                <mat-icon class="text-3xl">{{ $index < newTestimonialRating() ? 'star' : 'star_border' }}</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Seu Nome</span>
+          <input 
+            id="testimonial-name"
+            type="text" 
+            formControlName="name" 
+            placeholder="Ex: Carlos Henrique" 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none"
+          />
+        </div>
+
+        <div class="space-y-1">
+          <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Comentário</span>
+          <textarea 
+            id="testimonial-comment"
+            formControlName="comment" 
+            rows="3" 
+            placeholder="Fale o que achou dos serviços..." 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none"
+          ></textarea>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1 transition-all cursor-pointer border-none"
+        >
+          Enviar Avaliação
+        </button>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Modal 3: Client Dashboard - Create Service/Appointment -->
+@if (activeModal() === 'client_create_repair') {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <button type="button" (click)="activeModal.set('none')" class="absolute inset-0 w-full h-full text-left bg-black/60 backdrop-blur-xs border-none cursor-default" aria-label="Fechar Modal"></button>
+
+    <div class="relative bg-white max-w-lg w-full rounded-3xl overflow-hidden shadow-2xl p-6 space-y-5 animate-scale-up">
+      <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
+        <div>
+          <h3 class="font-display font-extrabold text-lg text-zinc-950">Novo Agendamento</h3>
+          <p class="text-xs text-zinc-400">Preencha os dados de manutenção</p>
+        </div>
+        <button type="button" (click)="activeModal.set('none')" class="p-1 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-zinc-800 transition-all border-none bg-transparent">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <form [formGroup]="clientCreateForm" (ngSubmit)="submitClientCreateRepair()" class="space-y-4 text-sm">
+        <div class="space-y-1">
+          <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Tipo do Aparelho</span>
+          <select 
+            id="client-create-device-type"
+            formControlName="deviceType" 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-xs focus:outline-none bg-white"
+          >
+            <option value="Notebook">Notebook</option>
+            <option value="Desktop PC">Desktop PC</option>
+            <option value="Placa-Mãe">Reparo Placa-Mãe</option>
+            <option value="Outro">Outro Equipamento</option>
+          </select>
+        </div>
+
+        <div class="space-y-1">
+          <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Marca & Modelo do Aparelho</span>
+          <input 
+            id="client-create-brand"
+            type="text" 
+            formControlName="deviceBrandModel" 
+            placeholder="Ex: Acer Aspire 5 A515" 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+          />
+        </div>
+
+        <div class="space-y-1">
+          <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Serviço de Mão de Obra Desejado</span>
+          <select 
+            id="client-create-labor-service"
+            formControlName="laborServiceId" 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-xs focus:outline-none bg-white"
+          >
+            <option value="" disabled selected>Selecione o serviço de mão de obra...</option>
+            @for (svc of store.laborServices(); track svc.id) {
+              <option [value]="svc.id">{{ svc.name }} - {{ svc.price | currency:'BRL' }}</option>
+            }
+          </select>
+          @if (clientCreateForm.get('laborServiceId')?.touched && clientCreateForm.get('laborServiceId')?.invalid) {
+            <span class="text-[11px] text-red-500 font-medium">Por favor, escolha um serviço de mão de obra.</span>
+          }
+        </div>
+
+        @if (clientCreateForm.get('laborServiceId')?.value) {
+          <div class="p-3 bg-emerald-50/55 rounded-xl border border-emerald-100 text-xs text-zinc-600 leading-relaxed animate-fade-in space-y-1">
+            @for (svc of store.laborServices(); track svc.id) {
+              @if (svc.id === clientCreateForm.get('laborServiceId')?.value) {
+                <div>
+                  <span class="font-bold text-emerald-800 font-display">Incluso no serviço:</span> {{ svc.description }}
+                </div>
+                <div class="font-bold text-emerald-600 font-mono mt-1 text-[11px]">
+                  Valor Mão de Obra Pré-determinado: {{ svc.price | currency:'BRL' }}
+                </div>
+              }
+            }
+          </div>
+        }
+
+        <div class="space-y-1">
+          <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Sintomas / Defeito apresentado</span>
+          <textarea 
+            id="client-create-description"
+            formControlName="description" 
+            rows="3" 
+            placeholder="Descreva detalhadamente o que ocorre..." 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+          ></textarea>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer border-none"
+        >
+          <mat-icon class="text-sm">schedule</mat-icon>
+          Criar Agendamento e Abrir O.S.
+        </button>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Modal 4: Client Dashboard - Edit Repair Request -->
+@if (activeModal() === 'client_edit_repair') {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <button type="button" (click)="activeModal.set('none')" class="absolute inset-0 w-full h-full text-left bg-black/60 backdrop-blur-xs border-none cursor-default" aria-label="Fechar Modal"></button>
+
+    <div class="relative bg-white max-w-md w-full rounded-3xl overflow-hidden shadow-2xl p-6 space-y-5 animate-scale-up">
+      <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
+        <div>
+          <h3 class="font-display font-extrabold text-lg text-zinc-950">Editar Agendamento</h3>
+          <p class="text-xs text-zinc-400">Altere os dados da sua solicitação</p>
+        </div>
+        <button type="button" (click)="activeModal.set('none')" class="p-1 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-zinc-800 transition-all border-none bg-transparent">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <form [formGroup]="clientEditForm" (ngSubmit)="submitClientEditRepair()" class="space-y-4 text-sm">
+        <div class="space-y-1">
+          <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Marca & Modelo do Aparelho</span>
+          <input 
+            id="client-edit-brand"
+            type="text" 
+            formControlName="deviceBrandModel" 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+          />
+        </div>
+
+        <div class="space-y-1">
+          <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">WhatsApp de Contato</span>
+          <input 
+            id="client-edit-phone"
+            type="text" 
+            formControlName="clientPhone" 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+          />
+        </div>
+
+        <div class="space-y-1">
+          <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">Descrição dos Defeitos</span>
+          <textarea 
+            id="client-edit-description"
+            formControlName="description" 
+            rows="3" 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+          ></textarea>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1 transition-all cursor-pointer border-none"
+        >
+          Salvar Alterações
+        </button>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Modal 5: Technician - Update Status and Comments -->
+@if (activeModal() === 'tech_edit_repair') {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <button type="button" (click)="activeModal.set('none')" class="absolute inset-0 w-full h-full text-left bg-black/60 backdrop-blur-xs border-none cursor-default" aria-label="Fechar Modal"></button>
+
+    <div class="relative bg-white max-w-2xl w-full rounded-3xl overflow-hidden shadow-2xl p-6 space-y-5 animate-scale-up max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
+        <div>
+          <h3 class="font-display font-extrabold text-lg text-zinc-950">Gerenciar Ordem de Serviço</h3>
+          <p class="text-xs text-zinc-400">Controle completo do status, laudo e faturamento</p>
+        </div>
+        <button type="button" (click)="activeModal.set('none')" class="p-1 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-zinc-800 transition-all border-none bg-transparent">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      @if (editingRepair(); as repair) {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs text-zinc-500">
+          <div class="bg-zinc-50 p-3.5 rounded-xl space-y-1 border border-zinc-100">
+            <p><strong>Número O.S:</strong> {{ repair.id }}</p>
+            <p><strong>Aparelho:</strong> {{ repair.deviceType }} - {{ repair.deviceBrandModel }}</p>
+            <p><strong>Defeito Relatado:</strong> {{ repair.description }}</p>
+          </div>
+
+          <div class="bg-zinc-50 p-3.5 rounded-xl space-y-1 border border-zinc-100">
+            <p><strong>Dono:</strong> {{ repair.clientName }}</p>
+            <p><strong>Telefone:</strong> {{ repair.clientPhone }}</p>
+            <p><strong>E-mail:</strong> {{ repair.clientEmail }}</p>
+          </div>
+        </div>
+
+        <form [formGroup]="techRepairForm" (ngSubmit)="submitTechEditRepair()" class="space-y-4 text-xs">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Status Atual da O.S.</span>
+              <select 
+                id="tech-edit-status"
+                formControlName="status" 
+                class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none bg-white"
+              >
+                <option value="Recebido">Recebido</option>
+                <option value="Em Diagnóstico">Em Diagnóstico</option>
+                <option value="Em Reparo">Em Reparo</option>
+                <option value="Testes Finais">Testes Finais</option>
+                <option value="Pronto para Retirada">Pronto para Retirada</option>
+                <option value="Entregue">Entregue (Fechado)</option>
+              </select>
+            </div>
+
+            <div class="space-y-1">
+              <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Valor Cobrado Consolidado (R$)</span>
+              <input 
+                id="tech-edit-price"
+                type="number" 
+                formControlName="finalPrice" 
+                class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none font-mono font-bold text-emerald-600"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Laudo / Comentários Técnicos</span>
+            <textarea 
+              id="tech-edit-comments"
+              formControlName="technicianComments" 
+              rows="2.5" 
+              placeholder="Adicione o status e o que já foi feito para que o cliente rastreie..." 
+              class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+            ></textarea>
+          </div>
+
+          <!-- Append Parts to OS Subsection -->
+          <div class="border-t border-zinc-100 pt-3 space-y-3">
+            <h5 class="font-bold text-zinc-800 text-xs">Lançar Peças na Ordem</h5>
+            
+            <div class="flex gap-2 items-end">
+              <div class="flex-1 space-y-1">
+                <span class="block text-[8px] font-bold text-zinc-500 uppercase">Nome da Peça</span>
+                <input 
+                  id="tech-add-part-name"
+                  type="text" 
+                  formControlName="newPartName" 
+                  placeholder="Ex: Bateria Dell 4 Células" 
+                  class="w-full px-3.5 py-1.5 border border-zinc-200 rounded-xl focus:outline-none"
+                />
+              </div>
+              <div class="w-32 space-y-1">
+                <span class="block text-[8px] font-bold text-zinc-500 uppercase">Preço (R$)</span>
+                <input 
+                  id="tech-add-part-price"
+                  type="number" 
+                  formControlName="newPartPrice" 
+                  class="w-full px-3.5 py-1.5 border border-zinc-200 rounded-xl focus:outline-none font-mono"
+                />
+              </div>
+              <button 
+                type="button" 
+                (click)="addPartToEditingRepair()"
+                class="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-bold cursor-pointer transition-all border-none"
+              >
+                Incluir
+              </button>
+            </div>
+
+            @if (repair.partsUsed.length > 0) {
+              <div class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                @for (part of repair.partsUsed; track $index) {
+                  <div class="flex justify-between items-center bg-zinc-50 p-2 border border-zinc-100 rounded-lg">
+                    <span>• <strong>{{ part.name }}</strong> ({{ part.price | currency:'BRL' }})</span>
+                    <button 
+                      type="button" 
+                      (click)="removePartFromEditingRepair($index)" 
+                      class="text-red-500 hover:text-red-700 font-bold px-2 border-none bg-transparent"
+                    >
+                      Remover
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <button 
+            type="submit" 
+            class="w-full py-2.5 bg-zinc-950 hover:bg-zinc-900 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1 transition-all cursor-pointer border-none"
+          >
+            <mat-icon class="text-sm">save</mat-icon>
+            Gravar Dados do Atendimento
+          </button>
+        </form>
+      }
+    </div>
+  </div>
+}
+
+<!-- Modal 6: Technician - Add/Edit Store Part -->
+@if (activeModal() === 'tech_edit_part') {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <button type="button" (click)="activeModal.set('none')" class="absolute inset-0 w-full h-full text-left bg-black/60 backdrop-blur-xs border-none cursor-default" aria-label="Fechar Modal"></button>
+
+    <div class="relative bg-white max-w-lg w-full rounded-3xl overflow-hidden shadow-2xl p-6 space-y-5 animate-scale-up max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
+        <div>
+          <h3 class="font-display font-extrabold text-lg text-zinc-950">
+            {{ editingPart() ? 'Editar Peça' : 'Cadastrar Nova Peça' }}
+          </h3>
+          <p class="text-xs text-zinc-400">Controle de estoque e preços da loja virtual</p>
+        </div>
+        <button type="button" (click)="activeModal.set('none')" class="p-1 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-zinc-800 transition-all border-none bg-transparent">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <form [formGroup]="techPartForm" (ngSubmit)="submitTechPartForm()" class="space-y-4 text-xs">
+        <div class="space-y-1">
+          <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Nome Comercial do Produto</span>
+          <input 
+            id="part-crud-name"
+            type="text" 
+            formControlName="name" 
+            placeholder="Ex: SSD Crucial 1TB NVMe" 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+          />
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div class="space-y-1">
+            <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Categoria</span>
+            <select 
+              id="part-crud-category"
+              formControlName="category" 
+              class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none bg-white"
+            >
+              <option value="Notebook">Notebook</option>
+              <option value="Desktop">Desktop</option>
+              <option value="Armazenamento">Armazenamento</option>
+              <option value="Memória">Memória</option>
+              <option value="Processador">Processador</option>
+              <option value="Acessórios">Acessórios</option>
+            </select>
+          </div>
+
+          <div class="space-y-1">
+            <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Preço (R$)</span>
+            <input 
+              id="part-crud-price"
+              type="number" 
+              formControlName="price" 
+              class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none font-mono"
+            />
+          </div>
+
+          <div class="space-y-1">
+            <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Unidades Estoque</span>
+            <input 
+              id="part-crud-stock"
+              type="number" 
+              formControlName="stock" 
+              class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">URL Imagem (Unsplash)</span>
+          <input 
+            id="part-crud-image-url"
+            type="text" 
+            formControlName="imageUrl" 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+          />
+        </div>
+
+        <div class="space-y-1">
+          <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Especificações e Detalhes</span>
+          <textarea 
+            id="part-crud-desc"
+            formControlName="description" 
+            rows="3" 
+            placeholder="Especificações técnicas, compatibilidades, prazos de garantia..." 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+          ></textarea>
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1 transition-all shadow-sm cursor-pointer border-none"
+        >
+          <mat-icon class="text-sm">save</mat-icon>
+          {{ editingPart() ? 'Salvar Modificações' : 'Cadastrar Novo Item' }}
+        </button>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Modal 6: Tech Admin Dashboard - Create/Edit Labor Service -->
+@if (activeModal() === 'tech_edit_labor_service') {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <button type="button" (click)="activeModal.set('none')" class="absolute inset-0 w-full h-full text-left bg-black/60 backdrop-blur-xs border-none cursor-default" aria-label="Fechar Modal"></button>
+
+    <div class="relative bg-white max-w-md w-full rounded-3xl overflow-hidden shadow-2xl p-6 space-y-5 animate-scale-up">
+      <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
+        <div>
+          <h3 class="font-display font-extrabold text-lg text-zinc-950">
+            {{ editingLaborService() ? 'Editar Serviço' : 'Cadastrar Novo Serviço' }}
+          </h3>
+          <p class="text-xs text-zinc-400">Gerenciamento de serviços de mão de obra pré-determinados</p>
+        </div>
+        <button type="button" (click)="activeModal.set('none')" class="p-1 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-zinc-800 transition-all border-none bg-transparent">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <form [formGroup]="techLaborServiceForm" (ngSubmit)="submitTechLaborServiceForm()" class="space-y-4 text-xs">
+        <div class="space-y-1">
+          <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Nome do Serviço (Mão de Obra)</span>
+          <input 
+            id="service-crud-name"
+            type="text" 
+            formControlName="name" 
+            placeholder="Ex: Formatação, Troca de Tela, etc." 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+          />
+          @if (techLaborServiceForm.get('name')?.touched && techLaborServiceForm.get('name')?.invalid) {
+            <span class="text-[10px] text-red-500">O nome do serviço é obrigatório.</span>
+          }
+        </div>
+
+        <div class="space-y-1">
+          <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Preço Mão de Obra (R$)</span>
+          <input 
+            id="service-crud-price"
+            type="number" 
+            formControlName="price" 
+            placeholder="Ex: 90.00" 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none font-mono"
+          />
+          @if (techLaborServiceForm.get('price')?.touched && techLaborServiceForm.get('price')?.invalid) {
+            <span class="text-[10px] text-red-500">Insira um preço de mão de obra válido maior que zero.</span>
+          }
+        </div>
+
+        <div class="space-y-1">
+          <span class="block text-[10px] font-bold text-zinc-600 uppercase tracking-wider">Descrição das Atividades</span>
+          <textarea 
+            id="service-crud-desc"
+            formControlName="description" 
+            rows="3" 
+            placeholder="O que está incluso neste serviço pré-determinado..." 
+            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+          ></textarea>
+          @if (techLaborServiceForm.get('description')?.touched && techLaborServiceForm.get('description')?.invalid) {
+            <span class="text-[10px] text-red-500">A descrição do serviço é obrigatória.</span>
+          }
+        </div>
+
+        <button 
+          type="submit" 
+          class="w-full py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1 transition-all shadow-sm cursor-pointer border-none"
+        >
+          <mat-icon class="text-sm">save</mat-icon>
+          {{ editingLaborService() ? 'Salvar Modificações' : 'Cadastrar Serviço' }}
+        </button>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- PRINT BUDGET MODAL -->
+@if (activeModal() === 'print_budget') {
+  @if (printRepair(); as rep) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto print:p-0 print:static print:block">
+      <!-- Backdrop (hidden on print) -->
+      <button type="button" (click)="activeModal.set('none')" class="absolute inset-0 w-full h-full text-left bg-black/75 backdrop-blur-xs border-none cursor-default print:hidden" aria-label="Fechar Modal"></button>
+      
+      <!-- Modal Content Area -->
+      <div class="relative w-full max-w-3xl bg-white text-zinc-900 rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-2xl z-10 animate-scale-up flex flex-col max-h-[90vh] md:max-h-[85vh] print:max-h-none print:shadow-none print:p-0 print:m-0 print:w-full print:max-w-none print:bg-white print:text-black print:block">
+        
+        <!-- Controls Header (hidden on print) -->
+        <div class="flex justify-between items-center pb-4 border-b border-zinc-100 mb-6 shrink-0 print:hidden">
+          <div class="flex items-center gap-2 text-emerald-600">
+            <mat-icon>print</mat-icon>
+            <span class="font-display font-extrabold text-lg text-zinc-900">Visualização de Impressão</span>
+          </div>
+          <button type="button" (click)="activeModal.set('none')" class="p-1 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-zinc-800 transition-all border-none bg-transparent cursor-pointer">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <!-- PRINTABLE DOCUMENT -->
+        <div id="print-document" class="flex-1 overflow-y-auto pr-2 -mr-2 space-y-8 bg-white p-2 text-zinc-900 print:overflow-visible print:max-h-none print:pr-0 print:mr-0 scrollbar-thin">
+          
+          <!-- Document Header -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b-2 border-zinc-900 pb-6">
+            <div>
+              <h1 class="text-2xl font-display font-black tracking-tight text-zinc-900 uppercase">Orçamento / Ordem de Serviço</h1>
+              <p class="text-xs text-zinc-500 mt-1 font-medium">InfoTech Assistência Técnica Avançada</p>
+              <p class="text-[11px] text-zinc-400">CNPJ: 12.345.678/0001-90 • WhatsApp: (11) 98888-7777</p>
+            </div>
+            <div class="text-right sm:text-right flex flex-col items-start sm:items-end gap-1 shrink-0">
+              <span class="px-3 py-1 bg-zinc-900 text-white font-mono font-black text-sm rounded-lg uppercase tracking-wider">
+                {{ rep.id }}
+              </span>
+              <p class="text-xs text-zinc-500 font-medium mt-1">Gerado em {{ rep.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+          </div>
+
+          <!-- Client & Device Info -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-zinc-50 p-6 rounded-2xl border border-zinc-200/60 print:bg-transparent print:p-0 print:border-none">
+            <div class="space-y-2">
+              <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-200 pb-1">Dados do Cliente</h3>
+              <p class="text-sm font-bold text-zinc-800"><span class="text-zinc-500 font-medium">Nome:</span> {{ rep.clientName }}</p>
+              <p class="text-sm font-bold text-zinc-800"><span class="text-zinc-500 font-medium">WhatsApp:</span> {{ rep.clientPhone }}</p>
+              <p class="text-sm font-bold text-zinc-800"><span class="text-zinc-500 font-medium">E-mail:</span> {{ rep.clientEmail }}</p>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-200 pb-1">Equipamento</h3>
+              <p class="text-sm font-bold text-zinc-800"><span class="text-zinc-500 font-medium">Dispositivo:</span> {{ rep.deviceType }}</p>
+              <p class="text-sm font-bold text-zinc-800"><span class="text-zinc-500 font-medium">Marca/Modelo:</span> {{ rep.deviceBrandModel }}</p>
+              <p class="text-sm font-bold text-zinc-800"><span class="text-zinc-500 font-medium">Urgência:</span> {{ rep.urgency }}</p>
+            </div>
+          </div>
+
+          <!-- Problem & Tech Assessment -->
+          <div class="space-y-4">
+            <div class="space-y-1.5">
+              <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-200 pb-1">Relato do Cliente (Defeito)</h3>
+              <p class="text-xs text-zinc-700 leading-relaxed bg-zinc-50/50 p-4 rounded-xl border border-zinc-100 print:bg-transparent print:p-0 print:border-none">
+                {{ rep.description }}
+              </p>
+            </div>
+
+            @if (rep.technicianComments) {
+              <div class="space-y-1.5">
+                <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-200 pb-1">Laudo e Observações do Técnico</h3>
+                <p class="text-xs text-zinc-700 leading-relaxed bg-zinc-50/50 p-4 rounded-xl border border-zinc-100 print:bg-transparent print:p-0 print:border-none">
+                  {{ rep.technicianComments }}
+                </p>
+              </div>
+            }
+          </div>
+
+          <!-- Values Breakdown -->
+          <div class="space-y-4">
+            <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-200 pb-1">Detalhamento dos Valores</h3>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-zinc-300 font-bold text-zinc-500">
+                    <th class="py-2.5">Descrição do Item / Serviço</th>
+                    <th class="py-2.5 text-right w-32">Valor Unitário</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-zinc-100">
+                  <!-- Labor Service -->
+                  <tr>
+                    <td class="py-3 font-semibold text-zinc-800">Mão de obra e serviços de diagnóstico</td>
+                    <td class="py-3 text-right font-mono text-zinc-800 font-medium">{{ rep.estimatedPrice | currency:'BRL' }}</td>
+                  </tr>
+                  
+                  <!-- Parts used -->
+                  @for (part of rep.partsUsed; track $index) {
+                    <tr>
+                      <td class="py-3 text-zinc-600">Peça: {{ part.name }}</td>
+                      <td class="py-3 text-right font-mono text-zinc-700 font-medium">{{ part.price | currency:'BRL' }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td class="py-2.5 text-zinc-400 italic" colspan="2">Nenhuma peça aplicada até o momento.</td>
+                    </tr>
+                  }
+                </tbody>
+                <tfoot>
+                  <tr class="border-t-2 border-zinc-900 font-bold text-sm">
+                    <td class="py-4 text-zinc-900 font-black">VALOR TOTAL CONSOLIDADO</td>
+                    <td class="py-4 text-right font-mono text-emerald-600 text-base font-black">{{ rep.finalPrice | currency:'BRL' }}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Declarative terms -->
+          <div class="bg-zinc-50 p-4.5 rounded-2xl border border-zinc-200/50 text-[10px] text-zinc-500 leading-relaxed print:bg-transparent print:p-0 print:border-none">
+            <strong class="text-zinc-800 uppercase block mb-1">Termos e Condições</strong>
+            Declaro estar ciente e de acordo com o orçamento apresentado e autorizo a execução dos serviços descritos acima. O prazo de entrega é estimado e pode sofrer alterações de acordo com a complexidade do reparo e disponibilidade de peças. A garantia legal para peças aplicadas e mão de obra é de 90 (noventa) dias a contar da data de entrega do equipamento.
+          </div>
+
+          <!-- Signatures Section -->
+          <div class="grid grid-cols-2 gap-12 pt-16 text-center text-xs">
+            <div class="space-y-1">
+              <div class="border-b border-zinc-400 mx-auto w-4/5 h-6"></div>
+              <p class="font-bold text-zinc-800">{{ rep.clientName }}</p>
+              <p class="text-[10px] text-zinc-400">Assinatura do Cliente</p>
+            </div>
+            <div class="space-y-1">
+              <div class="border-b border-zinc-400 mx-auto w-4/5 h-6"></div>
+              <p class="font-bold text-zinc-800">Técnico Responsável</p>
+              <p class="text-[10px] text-zinc-400">InfoTech Assistência Técnica</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Controls (hidden on print) -->
+        <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-zinc-100 mt-6 shrink-0 print:hidden">
+          <button 
+            type="button" 
+            (click)="triggerPrint()" 
+            class="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer border-none"
+          >
+            <mat-icon>print</mat-icon>
+            Imprimir ou Salvar PDF
+          </button>
+          <button 
+            type="button" 
+            (click)="activeModal.set('none')" 
+            class="px-6 py-3 bg-zinc-200 hover:bg-zinc-300 text-zinc-700 font-bold text-sm rounded-xl transition-all cursor-pointer border-none"
+          >
+            Fechar
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+}
+
+<!-- Custom Styles Animation Helpers -->
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes scaleUp {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-slide-in {
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-scale-up {
+    animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+</style>

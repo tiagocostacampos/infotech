@@ -1,0 +1,6 @@
+{
+  "name": "InfoTech - Assistência Técnica e Loja",
+  "description": "Plataforma completa de assistência técnica de informática com orçamento, rastreamento de reparos, área do cliente com CRUD, loja de peças e agendamentos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,407 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #020617;
+  color: #f1f5f9;
+}
+
+/* ==========================================
+   Bento Grid Theme Overrides
+   ========================================== */
+
+/* Cards, Sections and Widgets (Bento Tiles) */
+.bg-white, 
+.bg-zinc-50, 
+section.bg-zinc-50, 
+section.bg-white,
+div.bg-white {
+  background-color: #0f172a !important; /* slate-900 */
+  border-color: #1e293b !important; /* slate-800 */
+  color: #f1f5f9 !important;
+}
+
+/* Interactive elements hover on bento grid cards */
+.hover\:shadow-md:hover {
+  border-color: #334155 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  transform: translateY(-2px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Card lists & containers */
+.bg-zinc-100, .bg-zinc-200, .bg-zinc-300 {
+  background-color: #020617 !important; /* slate-950 inside slate-900 cards */
+}
+
+/* Inner elements and items */
+.bg-white .bg-zinc-50, 
+.bg-slate-900 .bg-zinc-50,
+.bg-white .bg-white,
+.bg-white .bg-zinc-100 {
+  background-color: rgba(2, 6, 23, 0.5) !important; /* semi-transparent slate-950 */
+  border-color: #1e293b !important;
+}
+
+/* Borders */
+.border,
+.border-t,
+.border-b,
+.border-l,
+.border-r,
+.border-zinc-100,
+.border-zinc-200,
+.border-zinc-300,
+.border-zinc-200\/50,
+.border-zinc-200\/60,
+.border-zinc-200\/75,
+.border-zinc-200\/80,
+.border-zinc-100\/80 {
+  border-color: #1e293b !important; /* slate-800 */
+}
+
+/* Headings and High Contrast text */
+h1, h2, h3, h4, h5, h6,
+.text-zinc-900,
+.text-zinc-950 {
+  color: #ffffff !important;
+  font-family: var(--font-display), var(--font-sans);
+}
+
+/* Paragraphs and secondary text */
+p,
+.text-zinc-600,
+.text-zinc-700 {
+  color: #94a3b8 !important; /* slate-400 */
+}
+
+.text-zinc-800 {
+  color: #cbd5e1 !important; /* slate-300 (high contrast for bento boxes) */
+}
+
+.text-zinc-500 {
+  color: #64748b !important; /* slate-500 */
+}
+
+.text-zinc-400 {
+  color: #475569 !important; /* slate-600 */
+}
+
+/* ==========================================
+   Specific Layout Styling (Bento Layout)
+   ========================================== */
+
+/* Sleek Full-Width Sticky Navigation Header */
+#navbar-main {
+  background-color: #020617 !important; /* Solid extremely dark slate (#020617) for high-contrast */
+  border-bottom: 1px solid #1e293b !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 2rem !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+#navbar-main button, #navbar-main nav button {
+  color: #cbd5e1;
+}
+
+/* Active and inactive tab navigation buttons */
+.nav-btn-active {
+  background-color: rgba(16, 185, 129, 0.12) !important; /* Emerald active background */
+  color: #34d399 !important; /* Emerald-400 active text */
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.nav-btn-inactive {
+  color: #cbd5e1 !important; /* Brighter high-contrast text color */
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
+}
+
+.nav-btn-inactive:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Inputs and Forms styling */
+input[type="text"], 
+input[type="password"], 
+input[type="email"], 
+input[type="number"], 
+select, 
+textarea {
+  background-color: #020617 !important; /* slate-950 */
+  border: 1px solid #1e293b !important;
+  color: #f1f5f9 !important;
+  border-radius: 0.75rem !important; /* rounded-xl */
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #3b82f6 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Hero Section layout styling */
+section.grid-cols-1.lg\:grid-cols-12 {
+  background-color: rgba(15, 23, 42, 0.4) !important;
+  border: 1px solid #1e293b !important;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Fast Tracker Bento Widget (Gradient Blue/Indigo with shadow) */
+.lg\:col-span-5.bg-white.p-6.rounded-2xl,
+div.lg\:col-span-5.bg-white {
+  background: linear-gradient(135deg, #2563eb, #4338ca) !important; /* from-blue-600 to-indigo-700 */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1.5rem !important;
+  color: #ffffff !important;
+  box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.25) !important;
+}
+
+.lg\:col-span-5.bg-white.p-6.rounded-2xl *,
+div.lg\:col-span-5.bg-white * {
+  color: #ffffff !important;
+}
+
+.lg\:col-span-5.bg-white.p-6.rounded-2xl input,
+div.lg\:col-span-5.bg-white input {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border-radius: 0.75rem !important;
+}
+
+.lg\:col-span-5.bg-white.p-6.rounded-2xl input::placeholder,
+div.lg\:col-span-5.bg-white input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.lg\:col-span-5.bg-white.p-6.rounded-2xl button,
+div.lg\:col-span-5.bg-white button {
+  background-color: #ffffff !important;
+  color: #2563eb !important; /* blue-600 */
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+}
+
+.lg\:col-span-5.bg-white.p-6.rounded-2xl button:hover,
+div.lg\:col-span-5.bg-white button:hover {
+  background-color: #f8fafc !important;
+}
+
+/* Primary Accents and Buttons (mapped from Emerald to Blue) */
+.bg-emerald-500,
+.bg-emerald-600 {
+  background-color: #2563eb !important; /* Blue-600 */
+  color: #ffffff !important;
+}
+
+.bg-emerald-500:hover,
+.bg-emerald-600:hover {
+  background-color: #3b82f6 !important; /* Blue-500 */
+}
+
+.text-emerald-500,
+.text-emerald-600 {
+  color: #3b82f6 !important; /* Blue-500 */
+}
+
+.text-emerald-700,
+.text-emerald-800 {
+  color: #60a5fa !important; /* Blue-400 */
+}
+
+.bg-emerald-50 {
+  background-color: rgba(37, 99, 235, 0.1) !important; /* Blue-900/10 */
+  color: #60a5fa !important;
+}
+
+.border-emerald-500 {
+  border-color: #2563eb !important;
+}
+
+.border-emerald-200,
+.border-emerald-100 {
+  border-color: rgba(37, 99, 235, 0.2) !important;
+}
+
+/* Success badging / icons should also stay green/emerald */
+.text-green-500, .bg-green-500\/10, .border-green-500\/20 {
+  color: #10b981 !important;
+}
+
+/* Budget Estimator Highlight Card (Bento Highlight) */
+.p-4.bg-emerald-50.border.border-emerald-200.rounded-2xl {
+  background-color: rgba(37, 99, 235, 0.1) !important;
+  border-color: rgba(37, 99, 235, 0.3) !important;
+}
+
+.p-4.bg-emerald-50.border.border-emerald-200.rounded-2xl .text-emerald-800 {
+  color: #93c5fd !important; /* blue-300 */
+}
+
+.p-4.bg-emerald-50.border.border-emerald-200.rounded-2xl .text-emerald-600 {
+  color: #60a5fa !important; /* blue-400 */
+}
+
+.p-4.bg-emerald-50.border.border-emerald-200.rounded-2xl .text-emerald-700\/80 {
+  color: #cbd5e1 !important; /* slate-300 */
+}
+
+/* Service icon grids */
+.w-12.h-12.bg-emerald-50.text-emerald-600 {
+  background-color: rgba(37, 99, 235, 0.1) !important;
+  color: #3b82f6 !important;
+}
+
+/* Mobile bottom-navigation bar */
+.md\:hidden.fixed.bottom-0.left-0.right-0 {
+  background-color: #0f172a !important;
+  border-top: 1px solid #1e293b !important;
+}
+
+.md\:hidden.fixed.bottom-0.left-0.right-0 button {
+  color: #64748b !important;
+}
+
+.md\:hidden.fixed.bottom-0.left-0.right-0 button.text-emerald-500 {
+  color: #3b82f6 !important;
+}
+
+/* Dialogs/Modals Styling for Bento aesthetics */
+.fixed.inset-0.z-50 .bg-white {
+  background-color: #0f172a !important;
+  border: 1px solid #1e293b !important;
+  border-radius: 1.5rem !important;
+}
+
+/* Tables and Admin lists */
+table, thead, tbody, tr, th, td {
+  border-color: #1e293b !important;
+}
+
+th {
+  background-color: #020617 !important;
+  color: #cbd5e1 !important;
+}
+
+td {
+  color: #e2e8f0 !important;
+}
+
+/* Badges */
+.bg-red-50 {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+}
+
+.bg-emerald-50.text-emerald-700 {
+  background-color: rgba(37, 99, 235, 0.1) !important;
+  color: #60a5fa !important;
+  border-color: rgba(37, 99, 235, 0.2) !important;
+}
+
+/* Testimonial card rating stars */
+.text-amber-400, .text-yellow-400 {
+  color: #3b82f6 !important; /* Make stars Blue to align with theme */
+}
+
+.text-emerald-400 {
+  color: #3b82f6 !important;
+}
+
+/* ==========================================
+   Print Styles for PDF Generation
+   ========================================== */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  
+  /* Hide all elements on the page by default */
+  body * {
+    visibility: hidden !important;
+  }
+  
+  /* Enable visibility only for the print document and all its children */
+  #print-document, #print-document * {
+    visibility: visible !important;
+  }
+  
+  /* Position the document perfectly for standard A4 paper size */
+  #print-document {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Force light backgrounds & black typography for paper ink saver */
+  #print-document h1,
+  #print-document h2,
+  #print-document h3,
+  #print-document h4,
+  #print-document p,
+  #print-document span,
+  #print-document strong,
+  #print-document td,
+  #print-document th,
+  #print-document div {
+    color: #000000 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  /* Specific border and line adjustments for clean layout */
+  #print-document .border-b-2 {
+    border-bottom: 2px solid #000000 !important;
+  }
+  #print-document .border-b {
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+  #print-document .border-t-2 {
+    border-top: 2px solid #000000 !important;
+  }
+  #print-document .border-t {
+    border-top: 1px solid #e2e8f0 !important;
+  }
+}
+
