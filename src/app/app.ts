@@ -15,6 +15,24 @@ export class App implements OnInit {
   // Inject Data Store singleton
   store = inject(DataStore);
 
+  // --- Toast Notifications ---
+  toasts = signal<{ id: string; type: 'success' | 'info' | 'warning' | 'error'; title: string; message: string }[]>([]);
+
+  showToast(title: string, message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') {
+    const id = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4);
+    const newToast = { id, type, title, message };
+    this.toasts.update(current => [...current, newToast]);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      this.toasts.update(current => current.filter(t => t.id !== id));
+    }, 5000);
+  }
+
+  removeToast(id: string) {
+    this.toasts.update(current => current.filter(t => t.id !== id));
+  }
+
   // Active view tab state: 'home' | 'shop' | 'client'
   activeTab = signal<'home' | 'shop' | 'client'>('home');
 
@@ -219,9 +237,36 @@ export class App implements OnInit {
   });
 
   ngOnInit() {
-    // Optionally trigger initial tracker search with demo code if wanted
-    this.trackSearchId.set('OS-1024');
-    this.searchRepairTrack();
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const osParam = params.get('os') || params.get('trackingId');
+      if (osParam) {
+        this.trackSearchId.set(osParam.trim().toUpperCase());
+        this.searchRepairTrack();
+        this.activeTab.set('home');
+        // Clear query param without reloading to keep URL clean
+        try {
+          const newUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, '', newUrl);
+        } catch (e) {
+          console.error('Error clearing query params', e);
+        }
+      } else {
+        this.trackSearchId.set('OS-1024');
+        this.searchRepairTrack();
+      }
+    } else {
+      this.trackSearchId.set('OS-1024');
+      this.searchRepairTrack();
+    }
+  }
+
+  getQRCodeUrl(repairId: string): string {
+    if (typeof window === 'undefined') {
+      return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=OS`;
+    }
+    const trackingUrl = `${window.location.origin}/?os=${repairId}`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(trackingUrl)}`;
   }
 
   // --- Handlers ---
@@ -263,6 +308,18 @@ export class App implements OnInit {
     }, 100);
   }
 
+  getStatusLevel(status: string): number {
+    switch (status) {
+      case 'Recebido': return 1;
+      case 'Em Diagnóstico': return 2;
+      case 'Em Reparo': return 3;
+      case 'Testes Finais': return 4;
+      case 'Pronto para Retirada': return 5;
+      case 'Entregue': return 6;
+      default: return 1;
+    }
+  }
+
   // Submit budget request on main page
   submitBudgetForm() {
     if (this.budgetForm.invalid) {
@@ -274,12 +331,13 @@ export class App implements OnInit {
     const foundService = this.store.laborServices().find(s => s.id === formVal.laborServiceId);
     const servicePrefix = foundService ? `[Serviço: ${foundService.name}] ` : '';
 
-    // Check if user is not logged in
-    const isLogged = !!this.store.currentUser();
+    // Check if user is logged in as client (guests or admin logged in will create a new client account)
+    const isClientLogged = this.store.currentUser()?.role === 'client';
     let finalUsername = '';
     let finalPassword = '';
+    let createdClientId = '';
 
-    if (!isLogged) {
+    if (!isClientLogged) {
       // Validate email unique
       const emailTaken = this.store.users().some(u => u.email.toLowerCase() === formVal.clientEmail.trim().toLowerCase());
       if (emailTaken) {
@@ -342,6 +400,9 @@ export class App implements OnInit {
         finalPassword = Math.floor(Math.random() * 900000 + 100000).toString(); // 6 digits
       }
 
+      // Check if admin is currently logged in, so we don't permanently switch session to the new client
+      const isAdminLogged = this.store.currentUser()?.role === 'admin';
+
       // Register the client account
       const reg = this.store.register(formVal.clientName, formVal.clientEmail, formVal.clientPhone, finalUsername, finalPassword);
       if (reg.success) {
@@ -350,17 +411,30 @@ export class App implements OnInit {
           password: finalPassword,
           auto: !formVal.customCredentials
         });
+
+        // Find the registered user to get their ID
+        const newlyCreatedUser = this.store.users().find(u => u.username.toLowerCase() === finalUsername.toLowerCase());
+        createdClientId = newlyCreatedUser ? newlyCreatedUser.id : 'U-GUEST';
+
+        // If admin was logged in, restore admin session
+        if (isAdminLogged) {
+          const adminUser = this.store.users().find(u => u.role === 'admin');
+          if (adminUser) {
+            this.store.login(adminUser.username, adminUser.password || '');
+          }
+        }
       } else {
         alert('Erro ao criar conta de cliente: ' + reg.error);
         return;
       }
     } else {
       this.createdCredentials.set(null);
+      createdClientId = this.store.currentUser()?.id || 'U-GUEST';
     }
     
-    // Create repair request (linked to the client, which is now logged in)
+    // Create repair request (linked to the correct client ID)
     const newRepair = this.store.createRepairRequest({
-      clientId: this.store.currentUser()?.id || 'U-GUEST',
+      clientId: createdClientId,
       clientName: formVal.clientName,
       clientEmail: formVal.clientEmail,
       clientPhone: formVal.clientPhone,
@@ -373,6 +447,14 @@ export class App implements OnInit {
 
     this.justCreatedRepair.set(newRepair);
     this.activeModal.set('budget_success');
+    
+    // Trigger toast notification
+    this.showToast(
+      'Ordem de Serviço Criada!',
+      `O.S. #${newRepair.id} (${newRepair.deviceType}) foi aberta para ${newRepair.clientName}.`,
+      newRepair.urgency === 'Alta' ? 'warning' : 'success'
+    );
+
     this.budgetForm.reset({
       deviceType: 'Notebook',
       urgency: 'Média',
@@ -518,7 +600,7 @@ export class App implements OnInit {
     const foundService = this.store.laborServices().find(s => s.id === val.laborServiceId);
     const servicePrefix = foundService ? `[Serviço: ${foundService.name}] ` : '';
 
-    this.store.createRepairRequest({
+    const newRepair = this.store.createRepairRequest({
       clientId: user.id,
       clientName: user.name,
       clientEmail: user.email,
@@ -529,6 +611,13 @@ export class App implements OnInit {
       urgency: val.urgency,
       estimatedPrice: this.liveClientEstimatedPrice()
     });
+
+    // Trigger toast notification
+    this.showToast(
+      'Nova Ordem de Serviço!',
+      `Sua O.S. #${newRepair.id} para ${newRepair.deviceType} foi registrada com sucesso.`,
+      newRepair.urgency === 'Alta' ? 'warning' : 'success'
+    );
 
     this.activeModal.set('none');
   }
@@ -660,7 +749,9 @@ export class App implements OnInit {
       status: val.status,
       technicianComments: val.technicianComments,
       finalPrice: val.finalPrice,
-      partsUsed: target.partsUsed
+      partsUsed: target.partsUsed,
+      photosBefore: target.photosBefore || [],
+      photosAfter: target.photosAfter || []
     });
 
     // If active tracked repair is being edited, sync the tracking card too!
@@ -793,5 +884,97 @@ export class App implements OnInit {
     const { name, comment } = this.testimonialForm.getRawValue();
     this.store.addTestimonial(name, this.newTestimonialRating(), comment);
     this.activeModal.set('none');
+  }
+
+  // --- Photo Gallery Methods ---
+  selectedGalleryPhoto = signal<string | null>(null);
+
+  onPhotoUploaded(event: Event, type: 'before' | 'after') {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const files = Array.from(input.files);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const base64 = e.target?.result as string;
+          if (base64) {
+            this.addPhotoToEditingRepair(base64, type);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      input.value = '';
+    }
+  }
+
+  onPhotoDropped(event: DragEvent, type: 'before' | 'after') {
+    event.preventDefault();
+    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+      const files = Array.from(event.dataTransfer.files);
+      files.forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64 = e.target?.result as string;
+            if (base64) {
+              this.addPhotoToEditingRepair(base64, type);
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  addPhotoUrl(urlInput: HTMLInputElement, type: 'before' | 'after') {
+    const url = urlInput.value.trim();
+    if (url) {
+      this.addPhotoToEditingRepair(url, type);
+      urlInput.value = '';
+    }
+  }
+
+  addPhotoToEditingRepair(photoUrl: string, type: 'before' | 'after') {
+    const repair = this.editingRepair();
+    if (!repair) return;
+
+    if (type === 'before') {
+      const photos = repair.photosBefore ? [...repair.photosBefore] : [];
+      photos.push(photoUrl);
+      this.editingRepair.set({
+        ...repair,
+        photosBefore: photos
+      });
+    } else {
+      const photos = repair.photosAfter ? [...repair.photosAfter] : [];
+      photos.push(photoUrl);
+      this.editingRepair.set({
+        ...repair,
+        photosAfter: photos
+      });
+    }
+  }
+
+  removePhotoFromEditingRepair(index: number, type: 'before' | 'after') {
+    const repair = this.editingRepair();
+    if (!repair) return;
+
+    if (type === 'before') {
+      const photos = (repair.photosBefore || []).filter((_, i) => i !== index);
+      this.editingRepair.set({
+        ...repair,
+        photosBefore: photos
+      });
+    } else {
+      const photos = (repair.photosAfter || []).filter((_, i) => i !== index);
+      this.editingRepair.set({
+        ...repair,
+        photosAfter: photos
+      });
+    }
   }
 }

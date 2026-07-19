@@ -47,6 +47,8 @@ export interface Repair {
   estimatedPrice: number;
   finalPrice: number;
   partsUsed: PartUsed[];
+  photosBefore?: string[];
+  photosAfter?: string[];
 }
 
 export interface Part {
@@ -200,7 +202,14 @@ const INITIAL_REPAIRS: Repair[] = [
     createdAt: '2026-07-15T10:30:00.000Z',
     estimatedPrice: 320.00,
     finalPrice: 350.00,
-    partsUsed: [{ name: 'Cabo Flat Tela Dell Inspiron 15', price: 80.00 }]
+    partsUsed: [{ name: 'Cabo Flat Tela Dell Inspiron 15', price: 80.00 }],
+    photosBefore: [
+      'https://images.unsplash.com/photo-1544006659-f0b21f04cb1d?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=600&q=80'
+    ],
+    photosAfter: [
+      'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=600&q=80'
+    ]
   },
   {
     id: 'OS-1025',
@@ -217,7 +226,11 @@ const INITIAL_REPAIRS: Repair[] = [
     createdAt: '2026-07-17T14:22:00.000Z',
     estimatedPrice: 180.00,
     finalPrice: 180.00,
-    partsUsed: []
+    partsUsed: [],
+    photosBefore: [
+      'https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=600&q=80'
+    ],
+    photosAfter: []
   },
   {
     id: 'OS-1026',
@@ -230,11 +243,17 @@ const INITIAL_REPAIRS: Repair[] = [
     description: 'Limpeza interna preventiva e formatação com atualização do macOS.',
     urgency: 'Baixa',
     status: 'Entregue',
-    technicianComments: 'Desoxidação leve preventiva do cooler e conector de bateria. Formatação limpa do macOS Sonoma efetuada com backup e restauração de arquivos do usuário conforme solicitado.',
+    technicianComments: 'Desoxidação leve preventiva do cooler e conector de bateria. Formatação limpa do macOS Sonoma efetuada com backup e restauración de arquivos do usuário conforme solicitado.',
     createdAt: '2026-07-10T09:00:00.000Z',
     estimatedPrice: 220.00,
     finalPrice: 220.00,
-    partsUsed: []
+    partsUsed: [],
+    photosBefore: [
+      'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=600&q=80'
+    ],
+    photosAfter: [
+      'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=600&q=80'
+    ]
   }
 ];
 
@@ -459,7 +478,9 @@ export class DataStore {
       technicianComments: 'Aguardando avaliação técnica preliminar.',
       createdAt: new Date().toISOString(),
       finalPrice: repairData.estimatedPrice,
-      partsUsed: []
+      partsUsed: [],
+      photosBefore: [],
+      photosAfter: []
     };
 
     this.repairsState.update(r => [newRepair, ...r]);

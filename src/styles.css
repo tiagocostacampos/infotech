@@ -405,3 +405,23 @@ td {
   }
 }
 
+/* ==========================================
+   Urgent Pulsating Glow Animation
+   ========================================== */
+@keyframes urgent-pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4);
+    border-color: rgba(244, 63, 94, 0.4);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 10px 3px rgba(244, 63, 94, 0.25);
+    border-color: rgba(244, 63, 94, 0.7);
+  }
+}
+
+.animate-urgent-glow {
+  animation: urgent-pulse-glow 2s infinite ease-in-out !important;
+}
+
