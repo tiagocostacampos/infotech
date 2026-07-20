@@ -1,50 +1,53 @@
 <!-- Top-Level Navigation Bar -->
-<header id="navbar-main" class="sticky top-0 z-40 w-full bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/80 shadow-md">
+<header id="navbar-main" 
+  [class]="currentTheme() === 'dark' 
+    ? 'sticky top-0 z-40 w-full bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/80 shadow-md transition-colors duration-300' 
+    : 'sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-zinc-200/80 shadow-sm transition-colors duration-300'"
+>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
     <!-- Logo -->
-    <button type="button" (click)="switchTab('home')" class="flex items-center gap-2.5 font-display font-extrabold text-xl text-white tracking-tight hover:opacity-90 cursor-pointer border-none bg-transparent group">
+    <button type="button" (click)="switchTab('home')" class="flex items-center gap-2.5 font-display font-extrabold text-xl tracking-tight hover:opacity-90 cursor-pointer border-none bg-transparent group">
       <span class="p-2 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.3)] group-hover:scale-105 transition-transform duration-200">
         <mat-icon class="text-base">computer</mat-icon>
       </span>
-      <span class="font-sans font-black text-white">Info<span class="text-emerald-400 group-hover:text-emerald-300 transition-colors duration-200">Tech</span></span>
+      <span class="font-sans font-black" [class]="currentTheme() === 'dark' ? 'text-white' : 'text-zinc-900'">
+        Info<span class="text-emerald-500 group-hover:text-emerald-400 transition-colors duration-200">Tech</span>
+      </span>
     </button>
 
     <!-- Navigation Tabs -->
-    <nav class="hidden md:flex items-center gap-2 font-sans bg-zinc-900/60 p-1.5 rounded-2xl border border-zinc-800/50">
+    <nav [class]="currentTheme() === 'dark'
+      ? 'hidden md:flex items-center gap-2 font-sans bg-zinc-900/60 p-1.5 rounded-2xl border border-zinc-800/50 transition-colors duration-300'
+      : 'hidden md:flex items-center gap-2 font-sans bg-zinc-100 p-1.5 rounded-2xl border border-zinc-200 transition-colors duration-300'"
+    >
       <button 
         type="button"
         (click)="switchTab('home')" 
-        [class]="activeTab() === 'home' 
-          ? 'bg-emerald-500/10 text-emerald-400 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/25 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
-          : 'text-zinc-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-transparent transition-all duration-300 cursor-pointer'"
+        [class]="getTabClass('home')"
       >
-        <mat-icon class="text-base" [class]="activeTab() === 'home' ? 'text-emerald-400' : 'text-zinc-500'">home_repair_service</mat-icon>
+        <mat-icon class="text-base" [class]="activeTab() === 'home' ? (currentTheme() === 'dark' ? 'text-emerald-400' : 'text-emerald-600') : 'text-zinc-500'">home_repair_service</mat-icon>
         Início e Serviços
       </button>
       <button 
         type="button"
         (click)="switchTab('shop')" 
-        [class]="activeTab() === 'shop' 
-          ? 'bg-emerald-500/10 text-emerald-400 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/25 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
-          : 'text-zinc-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-transparent transition-all duration-300 cursor-pointer'"
+        [class]="getTabClass('shop')"
       >
-        <mat-icon class="text-base" [class]="activeTab() === 'shop' ? 'text-emerald-400' : 'text-zinc-500'">storefront</mat-icon>
+        <mat-icon class="text-base" [class]="activeTab() === 'shop' ? (currentTheme() === 'dark' ? 'text-emerald-400' : 'text-emerald-600') : 'text-zinc-500'">storefront</mat-icon>
         Loja de Peças
       </button>
       <button 
         type="button"
         (click)="switchTab('client')" 
-        [class]="activeTab() === 'client' 
-          ? 'bg-emerald-500/10 text-emerald-400 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/25 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]' 
-          : 'text-zinc-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-transparent transition-all duration-300 cursor-pointer'"
+        [class]="getTabClass('client')"
       >
-        <mat-icon class="text-base" [class]="activeTab() === 'client' ? 'text-emerald-400' : 'text-zinc-500'">account_circle</mat-icon>
+        <mat-icon class="text-base" [class]="activeTab() === 'client' ? (currentTheme() === 'dark' ? 'text-emerald-400' : 'text-emerald-600') : 'text-zinc-500'">account_circle</mat-icon>
         Área do Cliente
         @if (store.currentUser(); as user) {
           <span class="ml-1.5 px-2 py-0.5 text-[9px] rounded-full uppercase font-black leading-none shadow-xs border transition-all duration-300"
             [class]="activeTab() === 'client'
               ? 'bg-emerald-500 text-white border-emerald-400'
-              : 'bg-zinc-850 text-zinc-300 border-zinc-700'"
+              : (currentTheme() === 'dark' ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-zinc-200 text-zinc-700 border-zinc-300')"
           >
             {{ user.role === 'admin' ? 'Téc' : 'Ativo' }}
           </span>
@@ -54,11 +57,28 @@
 
     <!-- Quick Actions & Session -->
     <div class="flex items-center gap-2.5">
+      <!-- Theme Toggle Button -->
+      <button 
+        type="button"
+        (click)="toggleTheme()"
+        class="w-10 h-10 flex items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-xs"
+        [class]="currentTheme() === 'dark' 
+          ? 'text-amber-400 hover:text-amber-300 bg-zinc-900 hover:bg-zinc-850 border-zinc-800/80' 
+          : 'text-indigo-600 hover:text-indigo-700 bg-zinc-100 hover:bg-zinc-200 border-zinc-200'"
+        [aria-label]="currentTheme() === 'dark' ? 'Ativar Modo Claro' : 'Ativar Modo Escuro'"
+        [title]="currentTheme() === 'dark' ? 'Ativar Modo Claro' : 'Ativar Modo Escuro'"
+      >
+        <mat-icon class="text-lg">{{ currentTheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+
       <!-- Shopping Cart Button -->
       <button 
         type="button"
         (click)="isCartOpen.set(true)" 
-        class="relative w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-850 rounded-xl border border-zinc-800 transition-all duration-200 cursor-pointer shadow-xs"
+        class="relative w-10 h-10 flex items-center justify-center transition-all duration-200 cursor-pointer shadow-xs border"
+        [class]="currentTheme() === 'dark'
+          ? 'text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-850 border-zinc-800'
+          : 'text-zinc-700 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200 border-zinc-200'"
         aria-label="Carrinho de Compras"
       >
         <mat-icon class="text-lg">shopping_cart</mat-icon>
@@ -71,9 +91,14 @@
 
       <!-- User Greeting -->
       @if (store.currentUser(); as user) {
-        <button type="button" (click)="switchTab('client')" class="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-zinc-900 hover:bg-zinc-850 rounded-xl border border-zinc-800 transition-all cursor-pointer">
+        <button type="button" (click)="switchTab('client')" 
+          class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border transition-all cursor-pointer"
+          [class]="currentTheme() === 'dark'
+            ? 'bg-zinc-900 hover:bg-zinc-850 border-zinc-800'
+            : 'bg-zinc-100 hover:bg-zinc-200 border-zinc-200'"
+        >
           <mat-icon class="text-zinc-400 text-sm">person</mat-icon>
-          <span class="text-xs font-semibold text-zinc-300 max-w-[100px] truncate">{{ user.name.split(' ')[0] }}</span>
+          <span class="text-xs font-semibold max-w-[100px] truncate" [class]="currentTheme() === 'dark' ? 'text-zinc-300' : 'text-zinc-700'">{{ user.name.split(' ')[0] }}</span>
         </button>
       }
 
@@ -90,16 +115,32 @@
 </header>
 
 <!-- Mobile Navigation Bar -->
-<div class="md:hidden fixed bottom-6 left-6 right-6 z-30 bg-zinc-950/95 backdrop-blur-md border border-zinc-800/80 px-6 py-3.5 flex justify-around items-center rounded-2xl shadow-[0_15px_30px_rgba(0,0,0,0.7)]">
-  <button type="button" (click)="switchTab('home')" [class]="activeTab() === 'home' ? 'text-emerald-400 flex flex-col items-center border-none bg-transparent scale-105 transition-all duration-300 font-extrabold' : 'text-zinc-500 flex flex-col items-center border-none bg-transparent transition-all duration-300'">
+<div class="md:hidden fixed bottom-6 left-6 right-6 z-30 px-6 py-3.5 flex justify-around items-center rounded-2xl transition-all duration-300"
+  [class]="currentTheme() === 'dark'
+    ? 'bg-zinc-950/95 backdrop-blur-md border border-zinc-800/80 shadow-[0_15px_30px_rgba(0,0,0,0.7)]'
+    : 'bg-white/95 backdrop-blur-md border border-zinc-200/80 shadow-[0_10px_25px_rgba(0,0,0,0.1)]'"
+>
+  <button type="button" (click)="switchTab('home')" 
+    [class]="activeTab() === 'home' 
+      ? 'text-emerald-500 flex flex-col items-center border-none bg-transparent scale-105 transition-all duration-300 font-extrabold' 
+      : (currentTheme() === 'dark' ? 'text-zinc-500 flex flex-col items-center border-none bg-transparent transition-all duration-300' : 'text-zinc-400 hover:text-zinc-600 flex flex-col items-center border-none bg-transparent transition-all duration-300')"
+  >
     <mat-icon>home_repair_service</mat-icon>
     <span class="text-[9px] font-bold mt-0.5">Serviços</span>
   </button>
-  <button type="button" (click)="switchTab('shop')" [class]="activeTab() === 'shop' ? 'text-emerald-400 flex flex-col items-center border-none bg-transparent scale-105 transition-all duration-300 font-extrabold' : 'text-zinc-500 flex flex-col items-center border-none bg-transparent transition-all duration-300'">
+  <button type="button" (click)="switchTab('shop')" 
+    [class]="activeTab() === 'shop' 
+      ? 'text-emerald-500 flex flex-col items-center border-none bg-transparent scale-105 transition-all duration-300 font-extrabold' 
+      : (currentTheme() === 'dark' ? 'text-zinc-500 flex flex-col items-center border-none bg-transparent transition-all duration-300' : 'text-zinc-400 hover:text-zinc-600 flex flex-col items-center border-none bg-transparent transition-all duration-300')"
+  >
     <mat-icon>storefront</mat-icon>
     <span class="text-[9px] font-bold mt-0.5">Peças</span>
   </button>
-  <button type="button" (click)="switchTab('client')" [class]="activeTab() === 'client' ? 'text-emerald-400 flex flex-col items-center border-none bg-transparent scale-105 transition-all duration-300 font-extrabold' : 'text-zinc-500 flex flex-col items-center border-none bg-transparent transition-all duration-300'">
+  <button type="button" (click)="switchTab('client')" 
+    [class]="activeTab() === 'client' 
+      ? 'text-emerald-500 flex flex-col items-center border-none bg-transparent scale-105 transition-all duration-300 font-extrabold' 
+      : (currentTheme() === 'dark' ? 'text-zinc-500 flex flex-col items-center border-none bg-transparent transition-all duration-300' : 'text-zinc-400 hover:text-zinc-600 flex flex-col items-center border-none bg-transparent transition-all duration-300')"
+  >
     <mat-icon>account_circle</mat-icon>
     <span class="text-[9px] font-bold mt-0.5">Cliente</span>
   </button>
@@ -590,6 +631,63 @@
             </div>
           </div>
 
+          <!-- Repair Timeline History Log Section -->
+          <div class="rounded-2xl border p-5 shadow-sm space-y-4"
+               [class]="currentTheme() === 'dark' 
+                 ? 'bg-zinc-900/40 border-zinc-800' 
+                 : 'bg-zinc-50 border-zinc-100'">
+            <div class="flex items-center gap-2 pb-2 border-b"
+                 [class]="currentTheme() === 'dark' ? 'border-zinc-800/80' : 'border-zinc-200/50'">
+              <mat-icon class="text-emerald-500">history</mat-icon>
+              <div class="space-y-0.5">
+                <h4 class="font-bold text-sm leading-none"
+                    [class]="currentTheme() === 'dark' ? 'text-white' : 'text-zinc-900'">
+                  Histórico de Alterações do Reparo
+                </h4>
+                <p class="text-[10px] text-zinc-400">Linha do tempo das atualizações feitas por técnicos ou clientes.</p>
+              </div>
+            </div>
+
+            <div class="space-y-4 max-h-72 overflow-y-auto pr-2">
+              @for (log of (repair.history || []); track $index) {
+                <div class="flex items-start gap-3 text-xs">
+                  <!-- Small step dot -->
+                  <div class="relative flex items-center justify-center h-5 w-2.5 shrink-0">
+                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                  </div>
+                  <div class="flex-1 space-y-1">
+                    <div class="flex items-center justify-between">
+                      <span class="font-extrabold" [class]="currentTheme() === 'dark' ? 'text-zinc-200' : 'text-zinc-800'">
+                        {{ log.changedBy }}
+                      </span>
+                      <span class="text-[10px] text-zinc-400 font-medium">
+                        {{ log.timestamp | date:'dd/MM/yyyy HH:mm' }}
+                      </span>
+                    </div>
+                    <div class="p-3 rounded-xl border leading-relaxed text-xs shadow-3xs"
+                         [class]="currentTheme() === 'dark' ? 'bg-zinc-950/60 border-zinc-800/80 text-zinc-300' : 'bg-white border-zinc-200/60 text-zinc-600'">
+                      @if (log.field === 'Status') {
+                        Status atualizado de <span class="font-semibold line-through opacity-55">{{ log.oldValue }}</span> para <strong class="text-emerald-500 font-black">{{ log.newValue }}</strong>
+                      } @else if (log.field === 'Notas Técnicas') {
+                        Observações técnicas atualizadas:
+                        <p class="mt-1.5 pl-2.5 border-l-2 italic text-[11px] leading-relaxed"
+                           [class]="currentTheme() === 'dark' ? 'border-emerald-500/30 text-zinc-400 bg-zinc-950/40 p-2 rounded-lg' : 'border-emerald-500/20 text-zinc-600 bg-zinc-50 p-2 rounded-lg'">
+                          "{{ log.newValue }}"
+                        </p>
+                      } @else {
+                        Campo <strong>{{ log.field }}</strong> alterado para: <span class="font-medium italic">"{{ log.newValue }}"</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              } @empty {
+                <div class="py-4 text-center text-zinc-400 italic text-xs">
+                  Nenhum histórico de alterações registrado até o momento.
+                </div>
+              }
+            </div>
+          </div>
+
           <!-- Gallery section in tracking view -->
           @if ((repair.photosBefore && repair.photosBefore.length > 0) || (repair.photosAfter && repair.photosAfter.length > 0)) {
             <div class="bg-zinc-50 border border-zinc-100 rounded-xl p-5 space-y-4">
@@ -798,11 +896,19 @@
                   id="budget-client-phone"
                   type="text" 
                   formControlName="clientPhone" 
-                  placeholder="Ex: 11999998888" 
-                  class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  placeholder="Ex: (11) 99999-8888" 
+                  (input)="onPhoneInput($event, 'budget')"
+                  class="w-full px-3.5 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2"
+                  [class]="budgetForm.get('clientPhone')?.touched && budgetForm.get('clientPhone')?.invalid
+                    ? 'border-red-500 focus:ring-red-500/25 focus:border-red-500 text-red-900 bg-red-50/10'
+                    : 'border-zinc-200 focus:ring-emerald-500/25 focus:border-emerald-500 text-zinc-800'"
                 />
                 @if (budgetForm.get('clientPhone')?.touched && budgetForm.get('clientPhone')?.invalid) {
-                  <span class="text-[11px] text-red-500 font-medium">WhatsApp é obrigatório.</span>
+                  <span class="text-[11px] text-red-500 font-bold flex items-center gap-0.5 animate-fade-in">
+                    <mat-icon class="text-xs">error_outline</mat-icon>
+                    @if (budgetForm.get('clientPhone')?.hasError('required')) { WhatsApp é obrigatório. }
+                    @else { WhatsApp deve ter DDD + 8 ou 9 dígitos. }
+                  </span>
                 }
               </div>
 
@@ -813,19 +919,42 @@
                   type="email" 
                   formControlName="clientEmail" 
                   placeholder="Ex: joao@email.com" 
-                  class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  class="w-full px-3.5 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2"
+                  [class]="budgetForm.get('clientEmail')?.touched && budgetForm.get('clientEmail')?.invalid
+                    ? 'border-red-500 focus:ring-red-500/25 focus:border-red-500 text-red-900 bg-red-50/10'
+                    : 'border-zinc-200 focus:ring-emerald-500/25 focus:border-emerald-500 text-zinc-800'"
                 />
-                @if (budgetForm.get('clientEmail')?.touched && budgetForm.get('clientEmail')?.invalid) {
-                  @if (budgetForm.get('clientEmail')?.hasError('registered')) {
-                    <span class="text-[11px] text-red-500 font-medium">Este e-mail já está cadastrado. Faça login na Área do Cliente ou use outro.</span>
-                  } @else {
-                    <span class="text-[11px] text-red-500 font-medium">E-mail válido é obrigatório.</span>
-                  }
+                @if (isEmailRegistered()) {
+                  <span class="text-[11.5px] text-emerald-600 font-bold flex items-center gap-1 animate-fade-in mt-1.5">
+                    <mat-icon class="text-xs text-emerald-500">check_circle</mat-icon>
+                    E-mail cadastrado! Esta nova O.S. será vinculada à sua conta automaticamente.
+                  </span>
+                } @else if (budgetForm.get('clientEmail')?.touched && budgetForm.get('clientEmail')?.invalid) {
+                  <span class="text-[11px] text-red-500 font-bold flex items-center gap-0.5 animate-fade-in">
+                    <mat-icon class="text-xs">error_outline</mat-icon>
+                    @if (budgetForm.get('clientEmail')?.hasError('required')) {
+                      E-mail é obrigatório.
+                    } @else {
+                      Formato de e-mail inválido.
+                    }
+                  </span>
                 }
               </div>
             </div>
 
-            @if (!store.currentUser() || store.currentUser()?.role === 'admin') {
+            @if (isEmailRegistered()) {
+              <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-950 text-xs flex items-start gap-2.5 mt-2 animate-fade-in shadow-2xs">
+                <mat-icon class="text-emerald-600 text-base mt-0.5">verified_user</mat-icon>
+                <div class="space-y-1">
+                  <p class="font-bold text-emerald-850 text-sm">Cliente Cadastrado Detectado!</p>
+                  <p class="text-[11px] text-zinc-600 leading-relaxed">
+                    Identificamos que o e-mail informado já está associado a uma conta de cliente. 
+                    <strong>Esta nova O.S. será vinculada automaticamente ao seu histórico</strong>. 
+                    Após a confirmação, você poderá fazer o login utilizando suas credenciais para acompanhar o andamento.
+                  </p>
+                </div>
+              </div>
+            } @else if (!store.currentUser() || store.currentUser()?.role === 'admin') {
               <div class="p-4 bg-zinc-50 rounded-2xl border border-zinc-200/80 space-y-4 mt-2 animate-fade-in">
                 <div class="flex items-center gap-1.5 text-zinc-900 font-bold text-xs uppercase tracking-wide border-b border-zinc-100 pb-2">
                   <mat-icon class="text-zinc-600 text-base">lock_person</mat-icon>
@@ -1295,9 +1424,20 @@
                       id="register-phone-input"
                       type="text" 
                       formControlName="phone" 
-                      placeholder="11999998888" 
-                      class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white"
+                      placeholder="(11) 99999-8888" 
+                      (input)="onPhoneInput($event, 'register')"
+                      class="w-full px-3.5 py-2 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:border-emerald-500 bg-white"
+                      [class]="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid
+                        ? 'border-red-500 focus:ring-red-500/25 focus:border-red-500 text-red-900 bg-red-50/10'
+                        : 'border-zinc-200 focus:ring-emerald-500/25 focus:border-emerald-500 text-zinc-800'"
                     />
+                    @if (registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid) {
+                      <span class="text-[10px] text-red-500 font-bold flex items-center gap-0.5 animate-fade-in mt-0.5">
+                        <mat-icon class="text-xs">error_outline</mat-icon>
+                        @if (registerForm.get('phone')?.hasError('required')) { WhatsApp é obrigatório }
+                        @else { DDD + 8 ou 9 dígitos }
+                      </span>
+                    }
                   </div>
                   <div class="space-y-1">
                     <span class="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">E-mail</span>
@@ -1306,8 +1446,18 @@
                       type="email" 
                       formControlName="email" 
                       placeholder="maria@email.com" 
-                      class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/25 focus:border-emerald-500 bg-white"
+                      class="w-full px-3.5 py-2 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:border-emerald-500 bg-white"
+                      [class]="registerForm.get('email')?.touched && registerForm.get('email')?.invalid
+                        ? 'border-red-500 focus:ring-red-500/25 focus:border-red-500 text-red-900 bg-red-50/10'
+                        : 'border-zinc-200 focus:ring-emerald-500/25 focus:border-emerald-500 text-zinc-800'"
                     />
+                    @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+                      <span class="text-[10px] text-red-500 font-bold flex items-center gap-0.5 animate-fade-in mt-0.5">
+                        <mat-icon class="text-xs">error_outline</mat-icon>
+                        @if (registerForm.get('email')?.hasError('required')) { E-mail é obrigatório }
+                        @else { Formato de e-mail inválido }
+                      </span>
+                    }
                   </div>
                 </div>
 
@@ -1394,6 +1544,46 @@
 
         <!-- CLIENT VIEWPORT -->
         @if (user.role === 'client') {
+          <!-- Browser Notification Permission Status Banner -->
+          @if (notificationPermission() !== 'granted' && notificationPermission() !== 'unsupported') {
+            <div class="p-5 rounded-3xl border border-emerald-200/80 bg-emerald-50/50 text-emerald-950 flex flex-col md:flex-row items-center justify-between gap-4 shadow-3xs animate-fade-in">
+              <div class="flex items-center gap-3.5">
+                <span class="p-3 bg-emerald-600 text-white rounded-2xl flex items-center justify-center shadow-md">
+                  <mat-icon class="text-xl animate-pulse">notifications_active</mat-icon>
+                </span>
+                <div>
+                  <h4 class="font-display font-extrabold text-sm tracking-tight text-emerald-950">
+                    Ative as Notificações do Navegador!
+                  </h4>
+                  <p class="text-xs text-emerald-700/90 font-medium">Receba alertas em tempo real no seu dispositivo assim que o conserto do seu aparelho for concluído ou estiver pronto para retirada.</p>
+                </div>
+              </div>
+              <button 
+                type="button"
+                (click)="requestNotificationPermission()"
+                class="w-full md:w-auto px-4.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs border-none cursor-pointer shrink-0"
+              >
+                <mat-icon class="text-sm">notifications</mat-icon>
+                Ativar Notificações do Navegador
+              </button>
+            </div>
+          } @else if (notificationPermission() === 'granted') {
+            <div class="p-4 rounded-3xl border border-zinc-200 bg-zinc-50 text-zinc-700 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-3xs text-xs animate-fade-in">
+              <div class="flex items-center gap-2.5">
+                <mat-icon class="text-emerald-500 text-lg">check_circle</mat-icon>
+                <span class="font-medium text-zinc-600">Sua conta está configurada para receber notificações de status da O.S. diretamente no seu navegador.</span>
+              </div>
+              <button 
+                type="button"
+                (click)="sendTestNotification()"
+                class="w-full sm:w-auto px-3.5 py-2 bg-zinc-200 hover:bg-zinc-300 active:bg-zinc-400 text-zinc-700 font-bold text-xs rounded-xl border-none cursor-pointer transition-all flex items-center justify-center gap-1 shrink-0"
+              >
+                <mat-icon class="text-sm">notifications_active</mat-icon>
+                Enviar Notificação de Teste
+              </button>
+            </div>
+          }
+
           <!-- Client Analytics Bento Section -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in">
             <div class="bg-white p-5 rounded-3xl border border-zinc-200/80 shadow-xs flex items-center gap-4 hover:shadow-md transition-all duration-300">
@@ -1886,6 +2076,63 @@
                       </div>
                     }
 
+                    <!-- Repair Timeline History Log Section -->
+                    <div class="rounded-2xl border p-4.5 space-y-3 my-2"
+                         [class]="currentTheme() === 'dark' 
+                           ? 'bg-zinc-900/30 border-zinc-800' 
+                           : 'bg-zinc-50/70 border-zinc-100'">
+                      <div class="flex items-center gap-2 pb-1.5 border-b"
+                           [class]="currentTheme() === 'dark' ? 'border-zinc-800/80' : 'border-zinc-200/50'">
+                        <mat-icon class="text-emerald-500 text-sm">history</mat-icon>
+                        <div class="space-y-0.5">
+                          <h5 class="font-bold text-xs leading-none"
+                              [class]="currentTheme() === 'dark' ? 'text-white' : 'text-zinc-900'">
+                            Histórico de Alterações do Reparo
+                          </h5>
+                          <p class="text-[9px] text-zinc-400">Atualizações de status e laudo com data e hora.</p>
+                        </div>
+                      </div>
+
+                      <div class="space-y-3 max-h-48 overflow-y-auto pr-1">
+                        @for (log of (rep.history || []); track $index) {
+                          <div class="flex items-start gap-2.5 text-xs">
+                            <!-- Small step dot -->
+                            <div class="relative flex items-center justify-center h-4 w-2 shrink-0">
+                              <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]"></div>
+                            </div>
+                            <div class="flex-1 space-y-0.5">
+                              <div class="flex items-center justify-between text-[10px]">
+                                <span class="font-bold" [class]="currentTheme() === 'dark' ? 'text-zinc-200' : 'text-zinc-800'">
+                                  {{ log.changedBy }}
+                                </span>
+                                <span class="text-[9px] text-zinc-400">
+                                  {{ log.timestamp | date:'dd/MM/yyyy HH:mm' }}
+                                </span>
+                              </div>
+                              <div class="p-2 rounded-lg border text-[11px] leading-relaxed shadow-3xs"
+                                   [class]="currentTheme() === 'dark' ? 'bg-zinc-950/40 border-zinc-800/85 text-zinc-300' : 'bg-white border-zinc-200/60 text-zinc-600'">
+                                @if (log.field === 'Status') {
+                                  Status atualizado de <span class="font-semibold line-through opacity-55">{{ log.oldValue }}</span> para <strong class="text-emerald-500 font-bold">{{ log.newValue }}</strong>
+                                } @else if (log.field === 'Notas Técnicas') {
+                                  Observações técnicas atualizadas:
+                                  <p class="mt-1 pl-2 border-l italic text-[10px]"
+                                     [class]="currentTheme() === 'dark' ? 'border-emerald-500/30 text-zinc-400 bg-zinc-900/40 p-1 rounded' : 'border-emerald-500/20 text-zinc-600 bg-zinc-50 p-1 rounded'">
+                                    "{{ log.newValue }}"
+                                  </p>
+                                } @else {
+                                  Campo <strong>{{ log.field }}</strong> alterado para: <span class="font-medium italic">"{{ log.newValue }}"</span>
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        } @empty {
+                          <div class="py-2 text-center text-zinc-400 italic text-[11px]">
+                            Nenhum histórico de alterações registrado até o momento.
+                          </div>
+                        }
+                      </div>
+                    </div>
+
                     <!-- Foot details and actions -->
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-2 text-xs">
                       <div class="flex items-baseline gap-1.5 bg-zinc-50 px-3 py-1.5 rounded-xl border border-zinc-100">
@@ -1998,6 +2245,35 @@
                     </div>
                   </div>
                 </div>
+
+                <!-- Configurações de Perfil / Preferências -->
+                <div class="p-5 border-t border-zinc-100/50 space-y-3 bg-zinc-50/50">
+                  <div class="flex items-center gap-2">
+                    <mat-icon class="text-zinc-400 text-sm">settings</mat-icon>
+                    <span class="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">Preferências</span>
+                  </div>
+
+                  <div class="flex items-center justify-between gap-4 py-1.5">
+                    <div class="space-y-0.5">
+                      <span class="block text-xs font-bold text-zinc-800 leading-none">Tema do Aplicativo</span>
+                      <p class="text-[9px] text-zinc-400">Alternar entre modo claro e escuro</p>
+                    </div>
+
+                    <button 
+                      type="button"
+                      (click)="toggleTheme()"
+                      class="px-3.5 py-1.5 bg-white border border-zinc-200 hover:border-emerald-500 hover:bg-emerald-50/10 rounded-xl font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs hover:shadow-xs transition-all"
+                    >
+                      @if (currentTheme() === 'dark') {
+                        <mat-icon class="text-amber-500 text-sm">light_mode</mat-icon>
+                        <span>Modo Claro</span>
+                      } @else {
+                        <mat-icon class="text-indigo-500 text-sm">dark_mode</mat-icon>
+                        <span>Modo Escuro</span>
+                      }
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2005,7 +2281,64 @@
 
         <!-- TECHNICIAN ADMIN PANEL VIEWPORT -->
         @if (user.role === 'admin') {
-          <div class="space-y-12">
+          <div class="space-y-12 animate-fade-in">
+            
+            <!-- Admin Section Tabs -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-b border-zinc-200/60 pb-2">
+              <div class="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1 sm:pb-0">
+                <button 
+                  type="button"
+                  (click)="adminTab.set('dashboard')"
+                  [class]="adminTab() === 'dashboard'
+                    ? 'border-b-3 border-emerald-500 text-emerald-600 font-extrabold pb-3 px-4 text-xs sm:text-sm flex items-center gap-2 transition-all shrink-0'
+                    : 'text-zinc-500 hover:text-zinc-800 font-semibold pb-3 px-4 text-xs sm:text-sm flex items-center gap-2 transition-all border-b-3 border-transparent shrink-0 cursor-pointer'"
+                >
+                  <mat-icon class="text-sm sm:text-base">dashboard</mat-icon>
+                  Painel de Controle
+                </button>
+                <button 
+                  type="button"
+                  (click)="adminTab.set('create_os')"
+                  [class]="adminTab() === 'create_os'
+                    ? 'border-b-3 border-emerald-500 text-emerald-600 font-extrabold pb-3 px-4 text-xs sm:text-sm flex items-center gap-2 transition-all shrink-0'
+                    : 'text-zinc-500 hover:text-zinc-800 font-semibold pb-3 px-4 text-xs sm:text-sm flex items-center gap-2 transition-all border-b-3 border-transparent shrink-0 cursor-pointer'"
+                >
+                  <mat-icon class="text-sm sm:text-base">add_circle</mat-icon>
+                  Novo Orçamento / Serviço
+                </button>
+              </div>
+
+              <div class="text-[10px] sm:text-xs text-zinc-400 font-mono font-bold bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-xl self-end sm:self-auto">
+                PAINEL DO TÉCNICO • {{ store.repairs().length }} O.S. ATIVAS
+              </div>
+            </div>
+
+            @if (adminTab() === 'dashboard') {
+              <!-- Critical Stock Alert Banner -->
+            @if (criticallyLowParts().length > 0) {
+              <div class="p-5 rounded-2xl border border-red-200 bg-red-50/70 text-red-900 flex flex-col md:flex-row items-center justify-between gap-4 animate-pulse shadow-sm">
+                <div class="flex items-center gap-3">
+                  <span class="p-2.5 bg-red-600 text-white rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.4)]">
+                    <mat-icon class="text-lg animate-bounce">warning</mat-icon>
+                  </span>
+                  <div>
+                    <h4 class="font-extrabold text-sm tracking-tight text-red-950 flex items-center gap-1.5">
+                      Estoque Criticamente Baixo Detectado!
+                    </h4>
+                    <p class="text-xs text-red-700 font-medium">Existem <strong class="font-extrabold underline text-red-900">{{ criticallyLowParts().length }}</strong> peças com estoque crítico (menos de 2 unidades).</p>
+                  </div>
+                </div>
+                <button 
+                  type="button"
+                  (click)="openPurchaseOrderModal()"
+                  class="w-full md:w-auto px-4 py-2.5 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-lg border-none cursor-pointer"
+                >
+                  <mat-icon class="text-sm">shopping_cart_checkout</mat-icon>
+                  Gerar Pedidos de Compra
+                </button>
+              </div>
+            }
+
             <!-- Counters -->
             <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div class="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs space-y-2">
@@ -2031,13 +2364,41 @@
               
               <!-- Left side: All repairs dashboard -->
               <div class="lg:col-span-7 space-y-6">
-                <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
-                  <h3 class="font-display font-extrabold text-xl text-zinc-900">Todas as Ordens de Serviço (CRUD)</h3>
-                  <span class="text-xs text-zinc-400 font-medium font-mono">{{ store.repairs().length }} Ordens</span>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-100 pb-3 gap-3">
+                  <div>
+                    <h3 class="font-display font-extrabold text-xl text-zinc-900">Todas as Ordens de Serviço (CRUD)</h3>
+                    <p class="text-[10px] text-zinc-400 mt-0.5">Gerencie os reparos e o histórico dos clientes</p>
+                  </div>
+                  <span class="text-xs text-zinc-400 font-medium font-mono shrink-0 bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-lg">
+                    {{ filteredRepairs().length }} / {{ store.repairs().length }} O.S.
+                  </span>
+                </div>
+
+                <!-- Admin O.S. Search Bar -->
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
+                    <mat-icon class="text-sm">search</mat-icon>
+                  </span>
+                  <input 
+                    type="text" 
+                    [value]="adminSearchText()"
+                    (input)="adminSearchText.set($any($event.target).value)"
+                    placeholder="Pesquisar por O.S., Nome, Telefone, Email ou Aparelho..." 
+                    class="w-full pl-10 pr-4 py-2.5 bg-zinc-50 border border-zinc-200 focus:border-emerald-500 focus:bg-white rounded-xl text-xs font-medium placeholder-zinc-400 outline-hidden transition-all shadow-2xs"
+                  />
+                  @if (adminSearchText()) {
+                    <button 
+                      type="button" 
+                      (click)="adminSearchText.set('')"
+                      class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-zinc-600 border-none bg-transparent cursor-pointer"
+                    >
+                      <mat-icon class="text-sm">clear</mat-icon>
+                    </button>
+                  }
                 </div>
 
                 <div class="space-y-4">
-                  @for (rep of store.repairs(); track rep.id) {
+                  @for (rep of filteredRepairs(); track rep.id) {
                     <div class="bg-white rounded-2xl border p-5 shadow-xs space-y-4 animate-fade-in transition-all duration-300"
                       [class]="rep.urgency === 'Alta' ? 'border-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.08)] bg-rose-50/10' : 'border-zinc-200/80'"
                     >
@@ -2164,7 +2525,12 @@
                             <div class="flex gap-2 items-center text-[10px] text-zinc-500 mt-0.5">
                               <span class="font-bold text-emerald-600 font-mono">{{ part.price | currency:'BRL' }}</span>
                               <span>•</span>
-                              <span [class]="part.stock <= 3 ? 'text-red-500 font-bold' : 'text-zinc-500'">Estoque: {{ part.stock }}</span>
+                              <span [class]="part.stock < 2 ? 'text-red-600 font-extrabold flex items-center gap-1 animate-pulse bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-md' : (part.stock <= 3 ? 'text-red-500 font-bold' : 'text-zinc-500')">
+                                Estoque: {{ part.stock }}
+                                @if (part.stock < 2) {
+                                  <mat-icon class="text-xs text-red-600 leading-none h-3 w-3 select-none">warning</mat-icon>
+                                }
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -2249,8 +2615,353 @@
 
               </div>
             </div>
-          </div>
-        }
+          } @else if (adminTab() === 'create_os') {
+            <div class="bg-white rounded-3xl border border-zinc-200/80 shadow-xs p-6 sm:p-8 space-y-8 animate-fade-in">
+              
+              <div class="border-b border-zinc-100 pb-5">
+                <h3 class="font-display font-extrabold text-2xl text-zinc-900 tracking-tight flex items-center gap-2">
+                  <span class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                    <mat-icon>add_circle</mat-icon>
+                  </span>
+                  Abertura de Nova O.S. / Orçamento
+                </h3>
+                <p class="text-xs text-zinc-500 mt-1.5">
+                  Selecione um cliente já cadastrado no sistema para vincular este novo orçamento ou serviço. Com isso, os registros serão salvos no histórico dele.
+                </p>
+              </div>
+
+              <form [formGroup]="adminCreateOsForm" (ngSubmit)="submitAdminCreateOs()" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Left Column: Client Selection & Device Details -->
+                <div class="space-y-6">
+                  <div class="bg-zinc-50/50 p-5 rounded-2xl border border-zinc-100 space-y-4">
+                    <span class="text-[10px] text-emerald-600 font-extrabold uppercase tracking-wider block">1. Identificação do Cliente</span>
+                    
+                    <!-- Mode Toggles: Select or Register -->
+                    <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-100 rounded-xl border border-zinc-200/50 text-center text-xs font-bold shadow-3xs">
+                      <button 
+                        type="button"
+                        id="btnModeSelect"
+                        (click)="adminClientMode.set('select')"
+                        [class]="adminClientMode() === 'select' 
+                          ? 'bg-white text-emerald-700 shadow-2xs py-2 rounded-lg flex items-center justify-center gap-1.5' 
+                          : 'text-zinc-500 hover:text-zinc-850 py-2 rounded-lg flex items-center justify-center gap-1.5'"
+                      >
+                        <mat-icon class="text-base">search</mat-icon>
+                        Cliente Cadastrado
+                      </button>
+                      <button 
+                        type="button"
+                        id="btnModeNew"
+                        (click)="adminClientMode.set('new')"
+                        [class]="adminClientMode() === 'new' 
+                          ? 'bg-white text-emerald-700 shadow-2xs py-2 rounded-lg flex items-center justify-center gap-1.5' 
+                          : 'text-zinc-500 hover:text-zinc-850 py-2 rounded-lg flex items-center justify-center gap-1.5'"
+                      >
+                        <mat-icon class="text-base">person_add</mat-icon>
+                        Cadastrar Novo
+                      </button>
+                    </div>
+
+                    @if (adminClientMode() === 'select') {
+                      <!-- Smart Real-Time Search -->
+                      <div class="space-y-1.5">
+                        <label for="adminClientSearch" class="block text-xs font-bold text-zinc-700">Busca Inteligente de Cliente <span class="text-zinc-400 font-normal">(E-mail, CPF, Nome ou Fone)</span></label>
+                        <div class="relative">
+                          <input 
+                            id="adminClientSearch"
+                            type="text"
+                            placeholder="Digite e busque em tempo real..."
+                            [value]="adminClientSearchQuery()"
+                            (input)="adminClientSearchQuery.set($any($event.target).value)"
+                            class="w-full pl-10 pr-4 py-2.5 bg-white border border-zinc-200 focus:border-emerald-500 focus:ring-emerald-500/25 rounded-xl text-xs font-semibold outline-hidden shadow-2xs text-zinc-850"
+                          />
+                          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
+                            <mat-icon class="text-base">search</mat-icon>
+                          </span>
+                        </div>
+
+                        <!-- Matches Dropdown dropdown-list -->
+                        @if (adminSearchMatchedClients().length > 0) {
+                          <div class="bg-white border border-zinc-200 rounded-xl overflow-hidden shadow-md max-h-48 overflow-y-auto divide-y divide-zinc-100 z-10 relative animate-fade-in">
+                            @for (matched of adminSearchMatchedClients(); track matched.id) {
+                              <button 
+                                type="button"
+                                (click)="selectAdminClient(matched)"
+                                class="w-full text-left p-3 hover:bg-emerald-50/50 flex items-start justify-between gap-2.5 transition-all"
+                              >
+                                <div class="min-w-0">
+                                  <span class="block text-xs font-bold text-zinc-800">{{ matched.name }}</span>
+                                  <span class="block text-[10px] text-zinc-500 font-mono">{{ matched.email }} • {{ matched.phone }} @if (matched.cpf) { • CPF: {{ matched.cpf }} }</span>
+                                </div>
+                                <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-sm shrink-0">Selecionar</span>
+                              </button>
+                            }
+                          </div>
+                        }
+                      </div>
+
+                      <!-- Traditional Fallback Select Dropdown -->
+                      <div class="space-y-1.5">
+                        <label for="adminClientId" class="block text-[10px] font-extrabold text-zinc-500 uppercase tracking-wider">Ou escolha da lista completa:</label>
+                        <div class="relative">
+                          <select 
+                            id="adminClientId"
+                            formControlName="clientId"
+                            class="w-full pl-4 pr-10 py-2.5 bg-white border border-zinc-200 focus:border-emerald-500 rounded-xl text-xs font-semibold outline-hidden appearance-none cursor-pointer shadow-2xs text-zinc-800"
+                          >
+                            <option value="" disabled selected>-- Escolha o cliente --</option>
+                            @for (c of clients(); track c.id) {
+                              <option [value]="c.id">{{ c.name }} (ID: {{ c.id }})</option>
+                            }
+                          </select>
+                          <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-zinc-400">
+                            <mat-icon class="text-lg">arrow_drop_down</mat-icon>
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- Client Details Display Card -->
+                      @if (adminCreateOsForm.value.clientId) {
+                        @let selectedClient = getSelectedClient(adminCreateOsForm.value.clientId);
+                        @if (selectedClient) {
+                          <div class="p-4 bg-white rounded-xl border border-emerald-100 space-y-2 text-xs animate-fade-in shadow-3xs relative">
+                            <div class="flex items-center justify-between gap-3">
+                              <span class="block font-bold text-zinc-850 truncate text-[13px]">{{ selectedClient.name }}</span>
+                              <span class="text-[9px] font-extrabold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md shrink-0 uppercase tracking-wider">
+                                Vinculado
+                              </span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-zinc-600 border-t border-zinc-50 pt-2.5 font-semibold">
+                              <div class="flex items-center gap-1.5">
+                                <mat-icon class="text-[13px] h-4 w-4 text-zinc-400">phone</mat-icon>
+                                {{ selectedClient.phone }}
+                              </div>
+                              <div class="flex items-center gap-1.5 truncate">
+                                <mat-icon class="text-[13px] h-4 w-4 text-zinc-400">alternate_email</mat-icon>
+                                {{ selectedClient.email }}
+                              </div>
+                              @if (selectedClient.cpf) {
+                                <div class="flex items-center gap-1.5 sm:col-span-2 font-mono">
+                                  <mat-icon class="text-[13px] h-4 w-4 text-zinc-400">badge</mat-icon>
+                                  CPF: {{ selectedClient.cpf }}
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        }
+                      }
+                    } @else {
+                      <!-- New Client Form Panel (On the fly) -->
+                      <div class="space-y-4 animate-fade-in">
+                        <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-950 text-[11px] flex gap-2">
+                          <mat-icon class="text-emerald-600 text-base shrink-0 mt-0.5">info</mat-icon>
+                          <div>
+                            <p class="font-bold">Cadastro Rápido em Tempo Real</p>
+                            <p class="text-[10px] text-zinc-500 leading-relaxed">
+                              Preencha os campos abaixo. Se o e-mail ou CPF já existir, o sistema recuperará automaticamente o cadastro para evitar duplicidade!
+                            </p>
+                          </div>
+                        </div>
+
+                        <!-- Nome -->
+                        <div class="space-y-1.5">
+                          <label for="newClientName" class="block text-xs font-bold text-zinc-700">Nome do Cliente <span class="text-red-500">*</span></label>
+                          <input 
+                            id="newClientName"
+                            type="text"
+                            formControlName="newClientName"
+                            placeholder="Nome Completo"
+                            class="w-full px-4 py-2.5 bg-white border border-zinc-200 focus:border-emerald-500 rounded-xl text-xs font-semibold outline-hidden shadow-2xs text-zinc-800"
+                          />
+                        </div>
+
+                        <!-- Email -->
+                        <div class="space-y-1.5">
+                          <label for="newClientEmail" class="block text-xs font-bold text-zinc-700">E-mail <span class="text-red-500">*</span></label>
+                          <input 
+                            id="newClientEmail"
+                            type="email"
+                            formControlName="newClientEmail"
+                            placeholder="exemplo@email.com"
+                            (input)="checkAndAutoRecoverClient()"
+                            class="w-full px-4 py-2.5 bg-white border border-zinc-200 focus:border-emerald-500 rounded-xl text-xs font-semibold outline-hidden shadow-2xs text-zinc-800"
+                          />
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <!-- Telefone -->
+                          <div class="space-y-1.5">
+                            <label for="newClientPhone" class="block text-xs font-bold text-zinc-700">WhatsApp <span class="text-red-500">*</span></label>
+                            <input 
+                              id="newClientPhone"
+                              type="text"
+                              formControlName="newClientPhone"
+                              placeholder="(11) 99999-9999"
+                              (input)="onAdminNewClientPhoneInput($event)"
+                              class="w-full px-4 py-2.5 bg-white border border-zinc-200 focus:border-emerald-500 rounded-xl text-xs font-semibold outline-hidden shadow-2xs text-zinc-800"
+                            />
+                          </div>
+
+                          <!-- CPF -->
+                          <div class="space-y-1.5">
+                            <label for="newClientCpf" class="block text-xs font-bold text-zinc-700">CPF <span class="text-zinc-400 font-normal">(Opcional)</span></label>
+                            <input 
+                              id="newClientCpf"
+                              type="text"
+                              formControlName="newClientCpf"
+                              placeholder="000.000.000-00"
+                              (input)="onCpfInput($event)"
+                              class="w-full px-4 py-2.5 bg-white border border-zinc-200 focus:border-emerald-500 rounded-xl text-xs font-semibold outline-hidden shadow-2xs text-zinc-800"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="bg-zinc-50/50 p-5 rounded-2xl border border-zinc-100 space-y-4">
+                    <span class="text-[10px] text-emerald-600 font-extrabold uppercase tracking-wider block">2. Dados do Equipamento</span>
+                    
+                    <!-- Device Type -->
+                    <div class="space-y-1.5">
+                      <label for="adminDeviceType" class="block text-xs font-bold text-zinc-700">Tipo de Dispositivo <span class="text-red-500">*</span></label>
+                      <div class="relative">
+                        <select 
+                          id="adminDeviceType"
+                          formControlName="deviceType"
+                          class="w-full pl-4 pr-10 py-3 bg-white border border-zinc-200 focus:border-emerald-500 rounded-xl text-xs font-semibold outline-hidden appearance-none cursor-pointer shadow-2xs text-zinc-800"
+                        >
+                          <option value="Notebook">Notebook</option>
+                          <option value="Desktop PC">Desktop PC</option>
+                          <option value="Placa-Mãe">Placa-Mãe</option>
+                          <option value="Outro">Outro</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-zinc-400">
+                          <mat-icon class="text-lg">arrow_drop_down</mat-icon>
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Brand and Model -->
+                    <div class="space-y-1.5">
+                      <label for="adminDeviceBrandModel" class="block text-xs font-bold text-zinc-700">Marca e Modelo <span class="text-red-500">*</span></label>
+                      <input 
+                        id="adminDeviceBrandModel"
+                        type="text"
+                        formControlName="deviceBrandModel"
+                        placeholder="Ex: Lenovo ThinkPad L14 Gen 3 / Custom Gamer"
+                        class="w-full px-4 py-3 bg-white border border-zinc-200 focus:border-emerald-500 rounded-xl text-xs font-semibold text-zinc-800 placeholder-zinc-400 outline-hidden shadow-2xs"
+                      />
+                      @if (adminCreateOsForm.controls.deviceBrandModel.touched && adminCreateOsForm.controls.deviceBrandModel.invalid) {
+                        <p class="text-[10px] text-red-500 font-medium">Marca e Modelo são obrigatórios.</p>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right Column: Labor Service, Description, Estimates -->
+                <div class="space-y-6">
+                  <div class="bg-zinc-50/50 p-5 rounded-2xl border border-zinc-100 space-y-4">
+                    <span class="text-[10px] text-emerald-600 font-extrabold uppercase tracking-wider block">3. Detalhes Técnicos e Orçamento</span>
+                    
+                    <!-- Labor Service (Optional) -->
+                    <div class="space-y-1.5">
+                      <label for="adminLaborServiceId" class="block text-xs font-bold text-zinc-700">Mão de Obra Predeterminada (Opcional)</label>
+                      <div class="relative">
+                        <select 
+                          id="adminLaborServiceId"
+                          formControlName="laborServiceId"
+                          class="w-full pl-4 pr-10 py-3 bg-white border border-zinc-200 focus:border-emerald-500 rounded-xl text-xs font-semibold outline-hidden appearance-none cursor-pointer shadow-2xs text-zinc-800"
+                        >
+                          <option value="">Nenhum / Orçamento Personalizado</option>
+                          @for (s of store.laborServices(); track s.id) {
+                            <option [value]="s.id">{{ s.name }} ({{ s.price | currency:'BRL' }})</option>
+                          }
+                        </select>
+                        <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-zinc-400">
+                          <mat-icon class="text-lg">arrow_drop_down</mat-icon>
+                        </span>
+                      </div>
+                      <p class="text-[10px] text-zinc-400">Escolha uma tabela de serviços ou descreva abaixo para orçamento personalizado.</p>
+                    </div>
+
+                    <!-- Urgency Level -->
+                    <div class="space-y-1.5">
+                      <span class="block text-xs font-bold text-zinc-700">Nível de Urgência <span class="text-red-500">*</span></span>
+                      <div class="grid grid-cols-3 gap-3">
+                        @for (level of ['Baixa', 'Média', 'Alta']; track level) {
+                          <button 
+                            type="button"
+                            (click)="adminCreateOsForm.patchValue({ urgency: $any(level) })"
+                            [class]="adminCreateOsForm.value.urgency === level 
+                              ? 'py-2 px-3 rounded-xl border font-bold text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 ' + 
+                                (level === 'Alta' ? 'bg-rose-500 border-rose-600 text-white shadow-rose-200 shadow-sm' : (level === 'Média' ? 'bg-amber-500 border-amber-600 text-white shadow-amber-200 shadow-sm' : 'bg-zinc-800 border-zinc-900 text-white shadow-zinc-200 shadow-sm'))
+                              : 'py-2 px-3 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-600 font-semibold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5'"
+                          >
+                            @if (level === 'Alta') {
+                              <span class="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span>
+                            } @else {
+                              <span class="w-1.5 h-1.5 rounded-full" [class]="level === 'Média' ? 'bg-amber-500' : 'bg-zinc-400'"></span>
+                            }
+                            {{ level }}
+                          </button>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="space-y-1.5">
+                      <label for="adminDescription" class="block text-xs font-bold text-zinc-700">Relato do Cliente / Diagnóstico Inicial <span class="text-red-500">*</span></label>
+                      <textarea 
+                        id="adminDescription"
+                        formControlName="description"
+                        rows="4"
+                        placeholder="Descreva em detalhes o sintoma relatado, histórico de defeito e o diagnóstico inicial..."
+                        class="w-full px-4 py-3 bg-white border border-zinc-200 focus:border-emerald-500 rounded-xl text-xs font-semibold text-zinc-800 placeholder-zinc-400 outline-hidden shadow-2xs resize-none"
+                      ></textarea>
+                      @if (adminCreateOsForm.controls.description.touched && adminCreateOsForm.controls.description.invalid) {
+                        <p class="text-[10px] text-red-500 font-medium">Por favor, descreva o problema com no mínimo 10 caracteres.</p>
+                      }
+                    </div>
+
+                    <!-- Live Estimation Price Card -->
+                    <div class="p-4 rounded-xl border border-dashed border-zinc-200 bg-zinc-50 flex items-center justify-between gap-4">
+                      <div class="space-y-0.5">
+                        <span class="block text-[10px] text-zinc-400 uppercase font-extrabold tracking-wider">Preço Estimado</span>
+                        <span class="block text-xs text-zinc-500 font-medium">Incluso valor base da mão de obra</span>
+                      </div>
+                      <span class="text-lg font-extrabold text-emerald-600 font-mono">{{ liveAdminEstimatedPrice() | currency:'BRL' }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Submit & Cancel Buttons -->
+                  <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                    <button 
+                      type="button"
+                      (click)="adminTab.set('dashboard')"
+                      class="w-full sm:w-1/3 py-3 px-4 border border-zinc-200 hover:bg-zinc-100 text-zinc-700 font-bold text-xs rounded-xl transition-all cursor-pointer text-center bg-white"
+                    >
+                      Cancelar
+                    </button>
+                    <button 
+                      type="submit"
+                      [disabled]="adminCreateOsForm.invalid"
+                      class="w-full sm:w-2/3 py-3 px-4 bg-emerald-500 hover:bg-emerald-600 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-lg border-none cursor-pointer"
+                    >
+                      <mat-icon class="text-sm">add_task</mat-icon>
+                      Gerar Ordem de Serviço / Orçamento
+                    </button>
+                  </div>
+
+                </div>
+
+              </form>
+
+            </div>
+          }
+        </div>
+      }
       }
     </div>
   }
@@ -2397,30 +3108,44 @@
         <!-- Credenciais do Cliente -->
         @if (createdCredentials(); as creds) {
           <div class="p-4 bg-zinc-950 text-white rounded-2xl space-y-3 border border-zinc-800 animate-fade-in text-xs">
-            <div class="flex items-center gap-1.5 text-emerald-400 font-bold uppercase tracking-wider">
-              <mat-icon class="text-base">account_circle</mat-icon>
-              Sua Conta de Acesso Criada!
-            </div>
-            <p class="text-zinc-300 leading-relaxed text-[11px]">
-              @if (creds.auto) {
-                Para sua comodidade, geramos automaticamente seus dados de acesso para você acompanhar esta solicitação futuramente:
-              } @else {
-                Sua conta de cliente foi criada com as credenciais que você definiu:
-              }
-            </p>
-            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 grid grid-cols-2 gap-2 text-xs font-mono">
-              <div>
-                <span class="text-[9px] text-zinc-500 block uppercase font-sans">Usuário</span>
-                <span class="font-bold text-emerald-400 text-sm">{{ creds.username }}</span>
+            @if (creds.existing) {
+              <div class="flex items-center gap-1.5 text-emerald-400 font-bold uppercase tracking-wider">
+                <mat-icon class="text-base">assignment_ind</mat-icon>
+                Histórico Vinculado!
               </div>
-              <div>
-                <span class="text-[9px] text-zinc-500 block uppercase font-sans">Senha</span>
-                <span class="font-bold text-emerald-400 text-sm">{{ creds.password }}</span>
+              <p class="text-zinc-300 leading-relaxed text-[11px]">
+                Detectamos que você já possui uma conta registrada com o usuário <strong>{{ creds.username }}</strong>. 
+                Esta nova Ordem de Serviço foi vinculada automaticamente ao seu histórico de cliente!
+              </p>
+              <p class="text-zinc-400 text-[10px] leading-snug">
+                Para visualizar e acompanhar, acesse a aba <strong>Área do Cliente</strong> utilizando sua senha habitual.
+              </p>
+            } @else {
+              <div class="flex items-center gap-1.5 text-emerald-400 font-bold uppercase tracking-wider">
+                <mat-icon class="text-base">account_circle</mat-icon>
+                Sua Conta de Acesso Criada!
               </div>
-            </div>
-            <p class="text-zinc-400 text-[10px] leading-snug">
-              Você já foi conectado automaticamente! Utilize estes dados para logar futuramente na aba <strong>Área do Cliente</strong>.
-            </p>
+              <p class="text-zinc-300 leading-relaxed text-[11px]">
+                @if (creds.auto) {
+                  Para sua comodidade, geramos automaticamente seus dados de acesso para você acompanhar esta solicitação futuramente:
+                } @else {
+                  Sua conta de cliente foi criada com as credenciais que você definiu:
+                }
+              </p>
+              <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 grid grid-cols-2 gap-2 text-xs font-mono">
+                <div>
+                  <span class="text-[9px] text-zinc-500 block uppercase font-sans">Usuário</span>
+                  <span class="font-bold text-emerald-400 text-sm">{{ creds.username }}</span>
+                </div>
+                <div>
+                  <span class="text-[9px] text-zinc-500 block uppercase font-sans">Senha</span>
+                  <span class="font-bold text-emerald-400 text-sm">{{ creds.password }}</span>
+                </div>
+              </div>
+              <p class="text-zinc-400 text-[10px] leading-snug">
+                Você já foi conectado automaticamente! Utilize estes dados para logar futuramente na aba <strong>Área do Cliente</strong>.
+              </p>
+            }
           </div>
         }
 
@@ -2631,8 +3356,20 @@
             id="client-edit-phone"
             type="text" 
             formControlName="clientPhone" 
-            class="w-full px-3.5 py-2 border border-zinc-200 rounded-xl focus:outline-none"
+            placeholder="(11) 99999-8888"
+            (input)="onPhoneInput($event, 'edit')"
+            class="w-full px-3.5 py-2 border rounded-xl focus:outline-none focus:ring-2"
+            [class]="clientEditForm.get('clientPhone')?.touched && clientEditForm.get('clientPhone')?.invalid
+              ? 'border-red-500 focus:ring-red-500/25 focus:border-red-500 text-red-900 bg-red-50/10'
+              : 'border-zinc-200 focus:ring-emerald-500/25 focus:border-emerald-500 text-zinc-800'"
           />
+          @if (clientEditForm.get('clientPhone')?.touched && clientEditForm.get('clientPhone')?.invalid) {
+            <span class="text-[11px] text-red-500 font-bold flex items-center gap-0.5 animate-fade-in mt-0.5">
+              <mat-icon class="text-xs">error_outline</mat-icon>
+              @if (clientEditForm.get('clientPhone')?.hasError('required')) { WhatsApp de contato é obrigatório. }
+              @else { WhatsApp deve ter DDD + 8 ou 9 dígitos. }
+            </span>
+          }
         </div>
 
         <div class="space-y-1">
@@ -2905,6 +3642,63 @@
                   <p class="text-[10px] text-zinc-400 italic">Nenhuma foto de "Depois" adicionada.</p>
                 }
               </div>
+            </div>
+          </div>
+
+          <!-- Repair Timeline History Log Section -->
+          <div class="rounded-2xl border p-4.5 space-y-3"
+               [class]="currentTheme() === 'dark' 
+                 ? 'bg-zinc-900/30 border-zinc-800' 
+                 : 'bg-zinc-50 border-zinc-100'">
+            <div class="flex items-center gap-2 pb-1.5 border-b"
+                 [class]="currentTheme() === 'dark' ? 'border-zinc-800/80' : 'border-zinc-200/50'">
+              <mat-icon class="text-emerald-500 text-sm">history</mat-icon>
+              <div class="space-y-0.5">
+                <h5 class="font-bold text-xs leading-none"
+                    [class]="currentTheme() === 'dark' ? 'text-white' : 'text-zinc-900'">
+                  Histórico de Alterações do Atendimento
+                </h5>
+                <p class="text-[9px] text-zinc-400">Linha do tempo das modificações feitas no status ou notas do equipamento.</p>
+              </div>
+            </div>
+
+            <div class="space-y-3 max-h-48 overflow-y-auto pr-1">
+              @for (log of (repair.history || []); track $index) {
+                <div class="flex items-start gap-2.5 text-[11px]">
+                  <!-- Small step dot -->
+                  <div class="relative flex items-center justify-center h-4 w-2 shrink-0">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]"></div>
+                  </div>
+                  <div class="flex-1 space-y-0.5">
+                    <div class="flex items-center justify-between text-[10px]">
+                      <span class="font-bold" [class]="currentTheme() === 'dark' ? 'text-zinc-200' : 'text-zinc-800'">
+                        {{ log.changedBy }}
+                      </span>
+                      <span class="text-[9px] text-zinc-400">
+                        {{ log.timestamp | date:'dd/MM/yyyy HH:mm' }}
+                      </span>
+                    </div>
+                    <div class="p-2 rounded-lg border leading-relaxed shadow-3xs"
+                         [class]="currentTheme() === 'dark' ? 'bg-zinc-950/40 border-zinc-800/85 text-zinc-300' : 'bg-white border-zinc-200/60 text-zinc-600'">
+                      @if (log.field === 'Status') {
+                        Status atualizado de <span class="font-semibold line-through opacity-55">{{ log.oldValue }}</span> para <strong class="text-emerald-500 font-bold">{{ log.newValue }}</strong>
+                      } @else if (log.field === 'Notas Técnicas') {
+                        Observações técnicas atualizadas:
+                        <p class="mt-1 pl-2 border-l italic text-[10px]"
+                           [class]="currentTheme() === 'dark' ? 'border-emerald-500/30 text-zinc-400 bg-zinc-900/40 p-1 rounded' : 'border-emerald-500/20 text-zinc-600 bg-zinc-50 p-1 rounded'">
+                          "{{ log.newValue }}"
+                        </p>
+                      } @else {
+                        Campo <strong>{{ log.field }}</strong> alterado para: <span class="font-medium italic">"{{ log.newValue }}"</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              } @empty {
+                <div class="py-2 text-center text-zinc-400 italic text-[11px]">
+                  Nenhum histórico de alterações registrado até o momento.
+                </div>
+              }
             </div>
           </div>
 
@@ -3267,6 +4061,125 @@
       </div>
     </div>
   }
+}
+
+<!-- PURCHASE ORDER GENERATOR MODAL -->
+@if (activeModal() === 'tech_purchase_order') {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Backdrop -->
+    <button type="button" (click)="activeModal.set('none')" class="absolute inset-0 w-full h-full text-left bg-black/60 backdrop-blur-xs border-none cursor-default" aria-label="Fechar Modal"></button>
+
+    <div class="relative bg-white max-w-2xl w-full rounded-3xl overflow-hidden shadow-2xl p-6 space-y-5 animate-scale-up max-h-[90vh] overflow-y-auto">
+      <!-- Header -->
+      <div class="flex justify-between items-center border-b border-zinc-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="p-1.5 bg-emerald-500 text-white rounded-lg flex items-center justify-center">
+            <mat-icon class="text-sm">shopping_cart_checkout</mat-icon>
+          </span>
+          <div>
+            <h3 class="font-display font-extrabold text-base text-zinc-950">Gerador de Pedidos de Compra</h3>
+            <p class="text-xs text-zinc-400">Reposição rápida de estoque para peças com nível crítico</p>
+          </div>
+        </div>
+        <button type="button" (click)="activeModal.set('none')" class="p-1 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-zinc-800 transition-all border-none bg-transparent cursor-pointer">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Content -->
+      <div class="space-y-4">
+        <div class="bg-amber-500/10 border border-amber-500/20 text-amber-900 rounded-xl p-3.5 flex gap-2.5 items-start text-xs leading-relaxed">
+          <mat-icon class="text-amber-600 text-sm shrink-0">info</mat-icon>
+          <div>
+            <span class="font-bold">Aviso sobre o pedido:</span> 
+            As quantidades sugeridas trazem o estoque atual de volta a uma quantidade ideal (10 unidades). Você pode ajustar as quantidades de pedido e os fornecedores sugeridos antes de confirmar o envio.
+          </div>
+        </div>
+
+        <div class="border border-zinc-200/60 rounded-2xl overflow-hidden overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-zinc-50 border-b border-zinc-100 font-bold text-zinc-500">
+                <th class="p-3">Peça</th>
+                <th class="p-3 text-center">Estoque Atual</th>
+                <th class="p-3">Quantidade a Pedir</th>
+                <th class="p-3">Fornecedor Recomendado</th>
+                <th class="p-3 text-right">Subtotal Estimado</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-100">
+              @for (item of purchaseOrders(); track item.partId) {
+                <tr class="hover:bg-zinc-50/50">
+                  <td class="p-3 font-semibold text-zinc-800">
+                    {{ item.name }}
+                    <span class="block text-[10px] text-zinc-400 font-mono font-medium">Preço Unit: {{ item.unitPrice | currency:'BRL' }}</span>
+                  </td>
+                  <td class="p-3 text-center">
+                    <span class="px-2 py-0.5 bg-red-100 border border-red-200 text-red-600 font-bold rounded text-[10px]">
+                      {{ item.currentStock }}
+                    </span>
+                  </td>
+                  <td class="p-3">
+                    <input 
+                      id="po-qty-{{item.partId}}"
+                      type="number" 
+                      [value]="item.quantityToOrder" 
+                      (input)="updatePOQuantity(item.partId, $any($event.target).value)" 
+                      min="1" 
+                      class="w-16 px-2.5 py-1 border border-zinc-200 rounded-lg text-center font-mono font-bold text-xs focus:outline-none focus:border-emerald-500"
+                    />
+                  </td>
+                  <td class="p-3">
+                    <input 
+                      id="po-supplier-{{item.partId}}"
+                      type="text" 
+                      [value]="item.supplier" 
+                      (input)="updatePOSupplier(item.partId, $any($event.target).value)" 
+                      class="w-full px-2 py-1 border border-zinc-200 rounded-lg text-xs focus:outline-none focus:border-emerald-500 min-w-[120px]"
+                    />
+                  </td>
+                  <td class="p-3 text-right font-mono text-zinc-800 font-bold">
+                    {{ (item.unitPrice * item.quantityToOrder) | currency:'BRL' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Summary & Actions -->
+      <div class="pt-4 border-t border-zinc-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Resumo do Pedido Consolidado</p>
+          <div class="flex items-baseline gap-2 mt-0.5">
+            <span class="text-xs text-zinc-600 font-medium">Total Estimado:</span>
+            <strong class="text-emerald-600 text-lg font-black font-mono">
+              {{ getPOTotalCost() | currency:'BRL' }}
+            </strong>
+          </div>
+        </div>
+
+        <div class="flex gap-2 w-full sm:w-auto">
+          <button 
+            type="button" 
+            (click)="activeModal.set('none')" 
+            class="flex-1 sm:flex-initial px-4 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold text-xs rounded-xl transition-all cursor-pointer border-none"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="button" 
+            (click)="submitPurchaseOrders()" 
+            class="flex-1 sm:flex-initial px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md hover:shadow-lg cursor-pointer border-none"
+          >
+            <mat-icon class="text-sm">check</mat-icon>
+            Enviar Pedidos e Atualizar Estoque
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 }
 
 <!-- TOAST NOTIFICATIONS OVERLAY -->

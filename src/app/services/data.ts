@@ -7,6 +7,7 @@ export interface User {
   phone: string;
   username: string;
   role: 'client' | 'admin';
+  cpf?: string;
 }
 
 export interface LaborService {
@@ -31,6 +32,14 @@ export interface PartUsed {
   price: number;
 }
 
+export interface RepairHistoryEntry {
+  timestamp: string;
+  field: string;
+  oldValue: string;
+  newValue: string;
+  changedBy: string;
+}
+
 export interface Repair {
   id: string; // OS-XXXX
   clientId: string;
@@ -49,6 +58,7 @@ export interface Repair {
   partsUsed: PartUsed[];
   photosBefore?: string[];
   photosAfter?: string[];
+  history?: RepairHistoryEntry[];
 }
 
 export interface Part {
@@ -274,7 +284,8 @@ const INITIAL_USERS = [
     phone: '11999998888',
     username: 'cliente',
     password: '123',
-    role: 'client' as const
+    role: 'client' as const,
+    cpf: '123.456.789-10'
   },
   {
     id: 'U003',
@@ -283,7 +294,8 @@ const INITIAL_USERS = [
     phone: '11977776666',
     username: 'mariana',
     password: '123',
-    role: 'client' as const
+    role: 'client' as const,
+    cpf: '987.654.321-00'
   }
 ];
 
@@ -431,13 +443,16 @@ export class DataStore {
     return { success: false, error: 'Usuário ou senha incorretos.' };
   }
 
-  register(name: string, email: string, phone: string, username: string, password: string): { success: boolean; error?: string } {
+  register(name: string, email: string, phone: string, username: string, password: string, cpf?: string): { success: boolean; error?: string } {
     const users = this.usersState();
     if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
       return { success: false, error: 'Este nome de usuário já está cadastrado.' };
     }
     if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
       return { success: false, error: 'Este email já está cadastrado.' };
+    }
+    if (cpf && users.some(u => u.cpf === cpf)) {
+      return { success: false, error: 'Este CPF já está cadastrado.' };
     }
 
     const newUser = {
@@ -447,7 +462,8 @@ export class DataStore {
       phone,
       username,
       password,
-      role: 'client' as const
+      role: 'client' as const,
+      cpf
     };
 
     this.usersState.update(u => [...u, newUser]);
@@ -480,7 +496,16 @@ export class DataStore {
       finalPrice: repairData.estimatedPrice,
       partsUsed: [],
       photosBefore: [],
-      photosAfter: []
+      photosAfter: [],
+      history: [
+        {
+          timestamp: new Date().toISOString(),
+          field: 'Status',
+          oldValue: '',
+          newValue: 'Recebido (Ordem de serviço aberta)',
+          changedBy: repairData.clientName || 'Cliente'
+        }
+      ]
     };
 
     this.repairsState.update(r => [newRepair, ...r]);
@@ -489,7 +514,50 @@ export class DataStore {
 
   updateRepair(osId: string, updatedData: Partial<Repair>) {
     this.repairsState.update(repairs => 
-      repairs.map(r => r.id === osId ? { ...r, ...updatedData } : r)
+      repairs.map(r => {
+        if (r.id === osId) {
+          const history = r.history ? [...r.history] : [];
+          const currentUser = this.activeUserState();
+          const changedBy = currentUser ? currentUser.name : 'Sistema';
+          const timestamp = new Date().toISOString();
+
+          // Monitor status changes
+          if (updatedData.status !== undefined && updatedData.status !== r.status) {
+            history.push({
+              timestamp,
+              field: 'Status',
+              oldValue: r.status,
+              newValue: updatedData.status,
+              changedBy
+            });
+          }
+
+          // Monitor technician comments (notes) changes
+          if (updatedData.technicianComments !== undefined && updatedData.technicianComments !== r.technicianComments) {
+            history.push({
+              timestamp,
+              field: 'Notas Técnicas',
+              oldValue: r.technicianComments || '(Sem observações)',
+              newValue: updatedData.technicianComments || '(Sem observações)',
+              changedBy
+            });
+          }
+
+          // Monitor description changes (if edited by client)
+          if (updatedData.description !== undefined && updatedData.description !== r.description) {
+            history.push({
+              timestamp,
+              field: 'Descrição',
+              oldValue: r.description,
+              newValue: updatedData.description,
+              changedBy
+            });
+          }
+
+          return { ...r, ...updatedData, history };
+        }
+        return r;
+      })
     );
   }
 

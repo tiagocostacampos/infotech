@@ -1,8 +1,35 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { DataStore, Repair, Part, RepairStatus, DeviceType, LaborService } from './services/data';
+import { DataStore, Repair, Part, RepairStatus, DeviceType, LaborService, User } from './services/data';
+
+export function emailPatternValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const val = control.value;
+    if (!val) return null;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(val) ? null : { invalidEmailPattern: true };
+  };
+}
+
+export function phonePatternValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const val = control.value;
+    if (!val) return null;
+    const digitsOnly = val.replace(/\D/g, '');
+    return (digitsOnly.length === 10 || digitsOnly.length === 11) ? null : { invalidPhonePattern: true };
+  };
+}
+
+export interface PurchaseOrderItem {
+  partId: string;
+  name: string;
+  currentStock: number;
+  quantityToOrder: number;
+  unitPrice: number;
+  supplier: string;
+}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,6 +63,47 @@ export class App implements OnInit {
   // Active view tab state: 'home' | 'shop' | 'client'
   activeTab = signal<'home' | 'shop' | 'client'>('home');
 
+  // --- Theme Management ---
+  currentTheme = signal<'light' | 'dark'>('dark');
+
+  toggleTheme() {
+    const next = this.currentTheme() === 'dark' ? 'light' : 'dark';
+    this.currentTheme.set(next);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('infotech_theme', next);
+      this.applyTheme(next);
+    }
+  }
+
+  applyTheme(theme: 'light' | 'dark') {
+    if (typeof window === 'undefined') return;
+    const body = document.body;
+    if (theme === 'dark') {
+      body.classList.add('dark-theme');
+    } else {
+      body.classList.remove('dark-theme');
+    }
+  }
+
+  getTabClass(tab: 'home' | 'shop' | 'client'): string {
+    const isActive = this.activeTab() === tab;
+    const isDark = this.currentTheme() === 'dark';
+    
+    if (isActive) {
+      if (isDark) {
+        return 'bg-emerald-500/10 text-emerald-400 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/25 transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]';
+      } else {
+        return 'bg-emerald-500/10 text-emerald-700 font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 border border-emerald-500/30 transition-all duration-300 shadow-xs';
+      }
+    } else {
+      if (isDark) {
+        return 'text-zinc-400 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-transparent transition-all duration-300 cursor-pointer';
+      } else {
+        return 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/50 px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-transparent transition-all duration-300 cursor-pointer';
+      }
+    }
+  }
+
   // --- Search & Track States ---
   trackSearchId = signal<string>('');
   trackedRepair = signal<Repair | null>(null);
@@ -57,7 +125,22 @@ export class App implements OnInit {
     | 'tech_edit_part'
     | 'tech_edit_labor_service'
     | 'print_budget'
+    | 'tech_purchase_order'
   >('none');
+
+  // Purchase Order generation state
+  purchaseOrders = signal<PurchaseOrderItem[]>([]);
+
+  // Browser Notification state
+  notificationPermission = signal<NotificationPermission | 'unsupported'>('default');
+
+  // Admin section sub-tab state: 'dashboard' | 'create_os'
+  adminTab = signal<'dashboard' | 'create_os'>('dashboard');
+  
+  // Admin search text state
+  adminSearchText = signal<string>('');
+  adminClientSearchQuery = signal<string>('');
+  adminClientMode = signal<'select' | 'new'>('select');
 
   // Current records being edited in modals
   editingRepair = signal<Repair | null>(null);
@@ -65,7 +148,7 @@ export class App implements OnInit {
   editingPart = signal<Part | null>(null);
   editingLaborService = signal<LaborService | null>(null);
   justCreatedRepair = signal<Repair | null>(null);
-  createdCredentials = signal<{ username: string; password: string; auto: boolean } | null>(null);
+  createdCredentials = signal<{ username: string; password?: string; auto: boolean; existing?: boolean } | null>(null);
 
   // Cart open/close status
   isCartOpen = signal<boolean>(false);
@@ -86,8 +169,8 @@ export class App implements OnInit {
 
   registerForm = new FormGroup({
     name: new FormControl('', { validators: [Validators.required], nonNullable: true }),
-    email: new FormControl('', { validators: [Validators.required, Validators.email], nonNullable: true }),
-    phone: new FormControl('', { validators: [Validators.required], nonNullable: true }),
+    email: new FormControl('', { validators: [Validators.required, Validators.email, emailPatternValidator()], nonNullable: true }),
+    phone: new FormControl('', { validators: [Validators.required, phonePatternValidator()], nonNullable: true }),
     username: new FormControl('', { validators: [Validators.required, Validators.minLength(4)], nonNullable: true }),
     password: new FormControl('', { validators: [Validators.required, Validators.minLength(4)], nonNullable: true })
   });
@@ -95,8 +178,8 @@ export class App implements OnInit {
   // Budget Calculator Form (Interactive estimate on Home)
   budgetForm = new FormGroup({
     clientName: new FormControl('', { validators: [Validators.required], nonNullable: true }),
-    clientEmail: new FormControl('', { validators: [Validators.required, Validators.email], nonNullable: true }),
-    clientPhone: new FormControl('', { validators: [Validators.required], nonNullable: true }),
+    clientEmail: new FormControl('', { validators: [Validators.required, Validators.email, emailPatternValidator()], nonNullable: true }),
+    clientPhone: new FormControl('', { validators: [Validators.required, phonePatternValidator()], nonNullable: true }),
     deviceType: new FormControl<DeviceType>('Notebook', { validators: [Validators.required], nonNullable: true }),
     deviceBrandModel: new FormControl('', { validators: [Validators.required], nonNullable: true }),
     description: new FormControl('', { validators: [Validators.required, Validators.minLength(10)], nonNullable: true }),
@@ -120,7 +203,7 @@ export class App implements OnInit {
   clientEditForm = new FormGroup({
     deviceBrandModel: new FormControl('', { validators: [Validators.required], nonNullable: true }),
     description: new FormControl('', { validators: [Validators.required], nonNullable: true }),
-    clientPhone: new FormControl('', { validators: [Validators.required], nonNullable: true })
+    clientPhone: new FormControl('', { validators: [Validators.required, phonePatternValidator()], nonNullable: true })
   });
 
   // Technician status & notes form
@@ -131,6 +214,21 @@ export class App implements OnInit {
     // Quick helper inputs for appending parts
     newPartName: new FormControl('', { nonNullable: true }),
     newPartPrice: new FormControl<number>(0, { nonNullable: true })
+  });
+
+  // Admin New Service Order Form for existing customers
+  adminCreateOsForm = new FormGroup({
+    clientId: new FormControl('', { nonNullable: true }),
+    deviceType: new FormControl<DeviceType>('Notebook', { validators: [Validators.required], nonNullable: true }),
+    deviceBrandModel: new FormControl('', { validators: [Validators.required], nonNullable: true }),
+    description: new FormControl('', { validators: [Validators.required, Validators.minLength(10)], nonNullable: true }),
+    urgency: new FormControl<'Baixa' | 'Média' | 'Alta'>('Média', { validators: [Validators.required], nonNullable: true }),
+    laborServiceId: new FormControl('', { nonNullable: true }),
+    // New Client fields (used when adminClientMode === 'new')
+    newClientName: new FormControl('', { nonNullable: true }),
+    newClientEmail: new FormControl('', { nonNullable: true }),
+    newClientPhone: new FormControl('', { nonNullable: true }),
+    newClientCpf: new FormControl('', { nonNullable: true })
   });
 
   // Technician labor service CRUD form
@@ -170,6 +268,46 @@ export class App implements OnInit {
     const selectedServiceId = this.clientCreateForm.value.laborServiceId;
     const foundService = this.store.laborServices().find(s => s.id === selectedServiceId);
     return foundService ? foundService.price : 0;
+  });
+
+  // Real-time estimated budget price for admin O.S. creation
+  liveAdminEstimatedPrice = computed(() => {
+    const selectedServiceId = this.adminCreateOsForm.value.laborServiceId;
+    const foundService = this.store.laborServices().find(s => s.id === selectedServiceId);
+    return foundService ? foundService.price : 0;
+  });
+
+  // Registered client users list
+  clients = computed(() => {
+    return this.store.users().filter(u => u.role === 'client');
+  });
+
+  // Filtered clients list matching real-time search on admin create OS screen
+  adminSearchMatchedClients = computed(() => {
+    const query = this.adminClientSearchQuery().trim().toLowerCase();
+    if (!query) return [];
+    const clientsList = this.store.users().filter(u => u.role === 'client');
+    return clientsList.filter(u => 
+      u.name.toLowerCase().includes(query) ||
+      u.email.toLowerCase().includes(query) ||
+      u.phone.includes(query) ||
+      (u.cpf && u.cpf.toLowerCase().replace(/\D/g, '').includes(query.replace(/\D/g, '')))
+    );
+  });
+
+  // Admin filtered repairs search list
+  filteredRepairs = computed(() => {
+    const repairs = this.store.repairs();
+    const search = this.adminSearchText().trim().toLowerCase();
+    if (!search) return repairs;
+    return repairs.filter(r => 
+      r.id.toLowerCase().includes(search) ||
+      r.clientName.toLowerCase().includes(search) ||
+      r.clientPhone.toLowerCase().includes(search) ||
+      r.clientEmail.toLowerCase().includes(search) ||
+      r.deviceBrandModel.toLowerCase().includes(search) ||
+      r.deviceType.toLowerCase().includes(search)
+    );
   });
 
   // Filtered store catalog
@@ -238,6 +376,20 @@ export class App implements OnInit {
 
   ngOnInit() {
     if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('infotech_theme') as 'light' | 'dark';
+      if (savedTheme) {
+        this.currentTheme.set(savedTheme);
+      } else {
+        this.currentTheme.set('dark');
+      }
+      this.applyTheme(this.currentTheme());
+
+      if ('Notification' in window) {
+        this.notificationPermission.set(Notification.permission);
+      } else {
+        this.notificationPermission.set('unsupported');
+      }
+
       const params = new URLSearchParams(window.location.search);
       const osParam = params.get('os') || params.get('trackingId');
       if (osParam) {
@@ -338,94 +490,104 @@ export class App implements OnInit {
     let createdClientId = '';
 
     if (!isClientLogged) {
-      // Validate email unique
-      const emailTaken = this.store.users().some(u => u.email.toLowerCase() === formVal.clientEmail.trim().toLowerCase());
-      if (emailTaken) {
-        this.budgetForm.get('clientEmail')?.setErrors({ registered: true });
-        this.budgetForm.get('clientEmail')?.markAsTouched();
-        return;
-      }
+      // Check if this email is already registered to a client
+      const existingUser = this.store.users().find(
+        u => u.email.toLowerCase() === formVal.clientEmail.trim().toLowerCase() && u.role === 'client'
+      );
 
-      if (formVal.customCredentials) {
-        const uName = formVal.username.trim();
-        const uPass = formVal.password.trim();
+      if (existingUser) {
+        // Since they already exist, we just link this O.S. to their account!
+        createdClientId = existingUser.id;
+        
+        // Save createdCredentials with 'existing: true'
+        this.createdCredentials.set({
+          username: existingUser.username,
+          auto: false,
+          existing: true
+        });
+      } else {
+        if (formVal.customCredentials) {
+          const uName = formVal.username.trim();
+          const uPass = formVal.password.trim();
 
-        let hasError = false;
-        if (!uName || uName.length < 4) {
-          this.budgetForm.get('username')?.setErrors({ minlength: true });
-          this.budgetForm.get('username')?.markAsTouched();
-          hasError = true;
+          let hasError = false;
+          if (!uName || uName.length < 4) {
+            this.budgetForm.get('username')?.setErrors({ minlength: true });
+            this.budgetForm.get('username')?.markAsTouched();
+            hasError = true;
+          }
+          if (!uPass || uPass.length < 4) {
+            this.budgetForm.get('password')?.setErrors({ minlength: true });
+            this.budgetForm.get('password')?.markAsTouched();
+            hasError = true;
+          }
+
+          if (hasError) return;
+
+          // Check username taken
+          const usernameTaken = this.store.users().some(u => u.username.toLowerCase() === uName.toLowerCase());
+          if (usernameTaken) {
+            this.budgetForm.get('username')?.setErrors({ taken: true });
+            this.budgetForm.get('username')?.markAsTouched();
+            return;
+          }
+
+          finalUsername = uName;
+          finalPassword = uPass;
+        } else {
+          // Generate automatically
+          const email = formVal.clientEmail.trim().toLowerCase();
+          const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+          let autoUsername = emailPrefix;
+          if (autoUsername.length < 4) {
+            autoUsername = (formVal.clientName.trim().split(' ')[0].toLowerCase().replace(/[^a-zA-Z0-9]/g, '') + '123').slice(0, 10);
+          }
+          // Ensure unique autoUsername
+          let isUnique = false;
+          let suffix = '';
+          let attempts = 0;
+          while (!isUnique && attempts < 20) {
+            const checkName = autoUsername + suffix;
+            if (!this.store.users().some(u => u.username.toLowerCase() === checkName.toLowerCase())) {
+              autoUsername = checkName;
+              isUnique = true;
+            } else {
+              suffix = Math.floor(Math.random() * 900 + 100).toString();
+            }
+            attempts++;
+          }
+          finalUsername = autoUsername;
+          finalPassword = Math.floor(Math.random() * 900000 + 100000).toString(); // 6 digits
         }
-        if (!uPass || uPass.length < 4) {
-          this.budgetForm.get('password')?.setErrors({ minlength: true });
-          this.budgetForm.get('password')?.markAsTouched();
-          hasError = true;
-        }
 
-        if (hasError) return;
+        // Check if admin is currently logged in, so we don't permanently switch session to the new client
+        const isAdminLogged = this.store.currentUser()?.role === 'admin';
 
-        // Check username taken
-        const usernameTaken = this.store.users().some(u => u.username.toLowerCase() === uName.toLowerCase());
-        if (usernameTaken) {
-          this.budgetForm.get('username')?.setErrors({ taken: true });
-          this.budgetForm.get('username')?.markAsTouched();
+        // Register the client account
+        const reg = this.store.register(formVal.clientName, formVal.clientEmail, formVal.clientPhone, finalUsername, finalPassword);
+        if (reg.success) {
+          this.createdCredentials.set({
+            username: finalUsername,
+            password: finalPassword,
+            auto: !formVal.customCredentials,
+            existing: false
+          });
+
+          // Find the registered user to get their ID
+          const newlyCreatedUser = this.store.users().find(u => u.username.toLowerCase() === finalUsername.toLowerCase());
+          createdClientId = newlyCreatedUser ? newlyCreatedUser.id : 'U-GUEST';
+
+          // If admin was logged in, restore admin session
+          if (isAdminLogged) {
+            const adminUser = this.store.users().find(u => u.role === 'admin');
+            if (adminUser) {
+              this.store.login(adminUser.username, adminUser.password || '');
+            }
+          }
+        } else {
+          alert('Erro ao criar conta de cliente: ' + reg.error);
           return;
         }
-
-        finalUsername = uName;
-        finalPassword = uPass;
-      } else {
-        // Generate automatically
-        const email = formVal.clientEmail.trim().toLowerCase();
-        const emailPrefix = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
-        let autoUsername = emailPrefix;
-        if (autoUsername.length < 4) {
-          autoUsername = (formVal.clientName.trim().split(' ')[0].toLowerCase().replace(/[^a-zA-Z0-9]/g, '') + '123').slice(0, 10);
-        }
-        // Ensure unique autoUsername
-        let isUnique = false;
-        let suffix = '';
-        let attempts = 0;
-        while (!isUnique && attempts < 20) {
-          const checkName = autoUsername + suffix;
-          if (!this.store.users().some(u => u.username.toLowerCase() === checkName.toLowerCase())) {
-            autoUsername = checkName;
-            isUnique = true;
-          } else {
-            suffix = Math.floor(Math.random() * 900 + 100).toString();
-          }
-          attempts++;
-        }
-        finalUsername = autoUsername;
-        finalPassword = Math.floor(Math.random() * 900000 + 100000).toString(); // 6 digits
-      }
-
-      // Check if admin is currently logged in, so we don't permanently switch session to the new client
-      const isAdminLogged = this.store.currentUser()?.role === 'admin';
-
-      // Register the client account
-      const reg = this.store.register(formVal.clientName, formVal.clientEmail, formVal.clientPhone, finalUsername, finalPassword);
-      if (reg.success) {
-        this.createdCredentials.set({
-          username: finalUsername,
-          password: finalPassword,
-          auto: !formVal.customCredentials
-        });
-
-        // Find the registered user to get their ID
-        const newlyCreatedUser = this.store.users().find(u => u.username.toLowerCase() === finalUsername.toLowerCase());
-        createdClientId = newlyCreatedUser ? newlyCreatedUser.id : 'U-GUEST';
-
-        // If admin was logged in, restore admin session
-        if (isAdminLogged) {
-          const adminUser = this.store.users().find(u => u.role === 'admin');
-          if (adminUser) {
-            this.store.login(adminUser.username, adminUser.password || '');
-          }
-        }
-      } else {
-        alert('Erro ao criar conta de cliente: ' + reg.error);
-        return;
       }
     } else {
       this.createdCredentials.set(null);
@@ -745,6 +907,9 @@ export class App implements OnInit {
     }
 
     const val = this.techRepairForm.getRawValue();
+    const oldStatus = target.status;
+    const newStatus = val.status;
+
     this.store.updateRepair(target.id, {
       status: val.status,
       technicianComments: val.technicianComments,
@@ -753,6 +918,15 @@ export class App implements OnInit {
       photosBefore: target.photosBefore || [],
       photosAfter: target.photosAfter || []
     });
+
+    // Send Browser Notification to Client if status changed to 'Pronto para Retirada' or 'Entregue'
+    if (newStatus !== oldStatus && (newStatus === 'Pronto para Retirada' || newStatus === 'Entregue')) {
+      const deviceName = target.deviceBrandModel || target.deviceType || 'Aparelho';
+      const statusLabel = newStatus === 'Pronto para Retirada' ? 'Pronto para Retirada' : 'Entregue';
+      const body = `O status do seu aparelho "${deviceName}" (O.S. ${target.id}) foi alterado para: ${statusLabel}.`;
+      
+      this.sendBrowserNotification(`Atualização da O.S. ${target.id}`, body);
+    }
 
     // If active tracked repair is being edited, sync the tracking card too!
     if (this.trackedRepair()?.id === target.id) {
@@ -815,6 +989,430 @@ export class App implements OnInit {
     if (confirm('Tem certeza que deseja excluir esta peça da loja?')) {
       this.store.deletePart(partId);
     }
+  }
+
+  // --- Purchase Orders for Low Stock Parts ---
+  criticallyLowParts = computed(() => {
+    return this.store.parts().filter(p => p.stock < 2);
+  });
+
+  openPurchaseOrderModal() {
+    const lowParts = this.criticallyLowParts();
+    if (lowParts.length === 0) {
+      this.showToast('Sem Alertas', 'Não há peças com estoque criticamente baixo (menos de 2 itens).', 'info');
+      return;
+    }
+
+    const initialPOs = lowParts.map(p => ({
+      partId: p.id,
+      name: p.name,
+      currentStock: p.stock,
+      quantityToOrder: 10 - p.stock, // Suggest ordering up to 10 units
+      unitPrice: p.price,
+      supplier: this.getRandomSupplierForPart(p.category)
+    }));
+
+    this.purchaseOrders.set(initialPOs);
+    this.activeModal.set('tech_purchase_order');
+  }
+
+  getRandomSupplierForPart(category: string): string {
+    const suppliers: Record<string, string[]> = {
+      'Notebook': ['SND Distribuição', 'Allied Brasil', 'Dell Componentes', 'Acer Tech Parts'],
+      'Desktop': ['KabuM! Atacado', 'Pichau Distribuição', 'Gigabyte Atacado', 'Asus Tech'],
+      'Armazenamento': ['Kingston Oficial', 'Crucial Brasil', 'Sandisk Logística', 'Seagate Atacado'],
+      'Memória': ['Corsair Distribuidora', 'Kingston Oficial', 'G.Skill Import', 'Adata Tech'],
+      'Processador': ['Intel Distribuição Brasil', 'AMD Atacado Sul', 'SND Distribuição'],
+      'Acessórios': ['Logitech Atacado', 'Multilaser Corp', 'Razer Brasil', 'Importadora Express']
+    };
+    const list = suppliers[category] || ['Distribuidor de Peças Geral', 'Importadora Nacional S.A.'];
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  updatePOQuantity(partId: string, quantity: number) {
+    const qty = Math.max(1, Math.floor(quantity));
+    this.purchaseOrders.update(orders => 
+      orders.map(o => o.partId === partId ? { ...o, quantityToOrder: qty } : o)
+    );
+  }
+
+  updatePOSupplier(partId: string, supplier: string) {
+    this.purchaseOrders.update(orders => 
+      orders.map(o => o.partId === partId ? { ...o, supplier: supplier } : o)
+    );
+  }
+
+  submitPurchaseOrders() {
+    const orders = this.purchaseOrders();
+    if (orders.length === 0) return;
+
+    // Simulate ordering and replenishing the stock in the store
+    orders.forEach(item => {
+      const part = this.store.parts().find(p => p.id === item.partId);
+      if (part) {
+        const newStock = part.stock + item.quantityToOrder;
+        this.store.updatePart(item.partId, { stock: newStock });
+      }
+    });
+
+    const totalItems = orders.reduce((sum, o) => sum + o.quantityToOrder, 0);
+    const totalCost = orders.reduce((sum, o) => sum + (o.quantityToOrder * o.unitPrice), 0);
+
+    this.showToast(
+      'Pedidos Gerados!',
+      `Foram encomendados ${totalItems} itens de ${orders.length} produtos diferentes. Custo total estimado: ${this.formatCurrency(totalCost)}.`,
+      'success'
+    );
+
+    this.activeModal.set('none');
+    this.purchaseOrders.set([]);
+  }
+
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+  }
+
+  getPOTotalCost(): number {
+    return this.purchaseOrders().reduce((sum, o) => sum + (o.quantityToOrder * o.unitPrice), 0);
+  }
+
+  requestNotificationPermission() {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      this.showToast('Não Suportado', 'Notificações do navegador não são suportadas neste dispositivo.', 'info');
+      return;
+    }
+
+    Notification.requestPermission().then(permission => {
+      this.notificationPermission.set(permission);
+      if (permission === 'granted') {
+        this.showToast('Permissão Concedida!', 'Você receberá notificações quando o status da sua O.S. for alterado.', 'success');
+        try {
+          new Notification('InfoTech Reparos', {
+            body: 'As notificações do navegador foram ativadas com sucesso! Você será avisado por aqui.',
+            icon: '/favicon.ico'
+          });
+        } catch (e) {
+          console.error('Error sending test notification', e);
+        }
+      } else if (permission === 'denied') {
+        this.showToast('Permissão Negada', 'Para receber alertas, você precisa liberar as notificações nas configurações do seu navegador.', 'warning');
+      }
+    }).catch(err => {
+      console.error('Notification permission error', err);
+    });
+  }
+
+  sendBrowserNotification(title: string, body: string) {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      return;
+    }
+
+    if (Notification.permission === 'granted') {
+      try {
+        new Notification(title, {
+          body,
+          icon: '/favicon.ico',
+          tag: 'os-status-change-' + Date.now()
+        });
+      } catch (e) {
+        console.error('Error sending browser notification', e);
+      }
+    }
+  }
+
+  sendTestNotification() {
+    this.sendBrowserNotification(
+      'Teste de Notificação - InfoTech',
+      'Isso é um teste para garantir que você receberá alertas quando o status da sua O.S. mudar para "Pronto para Retirada" ou "Entregue"!'
+    );
+  }
+
+  selectAdminClient(client: User) {
+    this.adminCreateOsForm.patchValue({ clientId: client.id });
+    this.adminClientSearchQuery.set('');
+  }
+
+  checkAndAutoRecoverClient() {
+    if (this.adminClientMode() !== 'new') return;
+    
+    const email = this.adminCreateOsForm.value.newClientEmail?.trim().toLowerCase();
+    const cpf = this.adminCreateOsForm.value.newClientCpf?.trim().replace(/\D/g, '');
+
+    if (!email && !cpf) return;
+
+    const matchedUser = this.store.users().find(u => {
+      if (u.role !== 'client') return false;
+      const userCpfClean = u.cpf ? u.cpf.replace(/\D/g, '') : '';
+      return (email && u.email.toLowerCase() === email) || (cpf && userCpfClean === cpf);
+    });
+
+    if (matchedUser) {
+      this.adminCreateOsForm.patchValue({
+        clientId: matchedUser.id,
+        newClientName: '',
+        newClientEmail: '',
+        newClientPhone: '',
+        newClientCpf: ''
+      });
+      this.adminClientMode.set('select');
+      this.adminClientSearchQuery.set('');
+      this.showToast(
+        'Cliente Localizado!',
+        `Os dados de "${matchedUser.name}" foram carregados automaticamente para evitar duplicidade de cadastro.`,
+        'success'
+      );
+    }
+  }
+
+  formatCpfValue(value: string): string {
+    if (!value) return '';
+    let numbers = value.replace(/\D/g, '');
+    if (numbers.length > 11) {
+      numbers = numbers.slice(0, 11);
+    }
+    if (numbers.length <= 3) {
+      return numbers;
+    } else if (numbers.length <= 6) {
+      return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
+    } else if (numbers.length <= 9) {
+      return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
+    } else {
+      return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9)}`;
+    }
+  }
+
+  onCpfInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const formatted = this.formatCpfValue(input.value);
+    this.adminCreateOsForm.get('newClientCpf')?.setValue(formatted, { emitEvent: false });
+    input.value = formatted;
+    this.checkAndAutoRecoverClient();
+  }
+
+  onAdminNewClientPhoneInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const formatted = this.formatPhoneValue(input.value);
+    this.adminCreateOsForm.get('newClientPhone')?.setValue(formatted, { emitEvent: false });
+    input.value = formatted;
+  }
+
+  submitAdminCreateOs() {
+    // Basic validations on device and description fields
+    if (this.adminCreateOsForm.get('deviceBrandModel')?.invalid || 
+        this.adminCreateOsForm.get('description')?.invalid ||
+        this.adminCreateOsForm.get('urgency')?.invalid) {
+      this.adminCreateOsForm.get('deviceBrandModel')?.markAsTouched();
+      this.adminCreateOsForm.get('description')?.markAsTouched();
+      this.adminCreateOsForm.get('urgency')?.markAsTouched();
+      this.showToast('Campos Inválidos', 'Por favor, preencha todos os dados do dispositivo e descrição.', 'warning');
+      return;
+    }
+
+    const val = this.adminCreateOsForm.getRawValue();
+    let finalClientId = '';
+    let finalClientName = '';
+    let finalClientEmail = '';
+    let finalClientPhone = '';
+
+    if (this.adminClientMode() === 'select') {
+      if (!val.clientId) {
+        this.showToast('Selecione o Cliente', 'Por favor, selecione um cliente cadastrado ou escolha a opção de cadastro em tempo real.', 'warning');
+        return;
+      }
+      const foundClient = this.store.users().find(u => u.id === val.clientId);
+      if (!foundClient) {
+        this.showToast('Cliente Não Encontrado', 'O cliente selecionado não foi encontrado no sistema.', 'error');
+        return;
+      }
+      finalClientId = foundClient.id;
+      finalClientName = foundClient.name;
+      finalClientEmail = foundClient.email;
+      finalClientPhone = foundClient.phone;
+    } else {
+      // New Client Mode
+      const nameVal = val.newClientName?.trim();
+      const emailVal = val.newClientEmail?.trim();
+      const phoneVal = val.newClientPhone?.trim();
+      const cpfVal = val.newClientCpf?.trim();
+
+      if (!nameVal || nameVal.length < 3) {
+        this.showToast('Nome Inválido', 'O nome do cliente deve ter pelo menos 3 caracteres.', 'warning');
+        return;
+      }
+      if (!emailVal || !emailVal.includes('@')) {
+        this.showToast('E-mail Inválido', 'Por favor, informe um endereço de e-mail válido.', 'warning');
+        return;
+      }
+      if (!phoneVal || phoneVal.length < 10) {
+        this.showToast('Telefone Inválido', 'Por favor, informe um telefone válido com DDD.', 'warning');
+        return;
+      }
+
+      // Check unique email or CPF
+      const emailTaken = this.store.users().some(u => u.email.toLowerCase() === emailVal.toLowerCase());
+      if (emailTaken) {
+        this.showToast('E-mail Duplicado', 'Este e-mail já está cadastrado para outro cliente.', 'error');
+        return;
+      }
+
+      if (cpfVal) {
+        const cleanCpf = cpfVal.replace(/\D/g, '');
+        const cpfTaken = this.store.users().some(u => u.cpf && u.cpf.replace(/\D/g, '') === cleanCpf);
+        if (cpfTaken) {
+          this.showToast('CPF Duplicado', 'Este CPF já está cadastrado para outro cliente.', 'error');
+          return;
+        }
+      }
+
+      // Generate credentials
+      const emailPrefix = emailVal.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+      let autoUsername = emailPrefix;
+      if (autoUsername.length < 4) {
+        autoUsername = (nameVal.split(' ')[0].toLowerCase().replace(/[^a-zA-Z0-9]/g, '') + '123').slice(0, 10);
+      }
+      
+      let isUnique = false;
+      let suffix = '';
+      let attempts = 0;
+      while (!isUnique && attempts < 20) {
+        const checkName = autoUsername + suffix;
+        if (!this.store.users().some(u => u.username.toLowerCase() === checkName.toLowerCase())) {
+          autoUsername = checkName;
+          isUnique = true;
+        } else {
+          suffix = Math.floor(Math.random() * 900 + 100).toString();
+        }
+        attempts++;
+      }
+      const finalUsername = autoUsername;
+      const finalPassword = Math.floor(Math.random() * 900000 + 100000).toString(); // 6 digits
+
+      // Save current user to restore session if they are admin
+      const currentLoggedIn = this.store.currentUser();
+      const isAdminLogged = currentLoggedIn?.role === 'admin';
+
+      // Register
+      const reg = this.store.register(nameVal, emailVal, phoneVal, finalUsername, finalPassword, cpfVal);
+      if (!reg.success) {
+        this.showToast('Erro ao Cadastrar', reg.error || 'Erro desconhecido', 'error');
+        return;
+      }
+
+      // If admin was logged in, restore admin session because register logs in the new user automatically
+      if (isAdminLogged && currentLoggedIn) {
+        const adminUser = this.store.users().find(u => u.id === currentLoggedIn.id);
+        if (adminUser) {
+          this.store.login(adminUser.username, adminUser.password || '');
+        }
+      }
+
+      const newlyCreatedUser = this.store.users().find(u => u.username.toLowerCase() === finalUsername.toLowerCase());
+      if (!newlyCreatedUser) {
+        this.showToast('Erro', 'Não foi possível recuperar o cliente cadastrado.', 'error');
+        return;
+      }
+
+      finalClientId = newlyCreatedUser.id;
+      finalClientName = newlyCreatedUser.name;
+      finalClientEmail = newlyCreatedUser.email;
+      finalClientPhone = newlyCreatedUser.phone;
+
+      // Save credentials to display to technician so they can share it with client
+      this.createdCredentials.set({
+        username: finalUsername,
+        password: finalPassword,
+        auto: true,
+        existing: false
+      });
+    }
+
+    const foundService = this.store.laborServices().find(s => s.id === val.laborServiceId);
+    const servicePrefix = foundService ? `[Serviço: ${foundService.name}] ` : '';
+
+    const newRepair = this.store.createRepairRequest({
+      clientId: finalClientId,
+      clientName: finalClientName,
+      clientEmail: finalClientEmail,
+      clientPhone: finalClientPhone,
+      deviceType: val.deviceType,
+      deviceBrandModel: val.deviceBrandModel,
+      description: servicePrefix + val.description,
+      urgency: val.urgency,
+      estimatedPrice: this.liveAdminEstimatedPrice()
+    });
+
+    this.showToast(
+      'O.S. Criada com Sucesso!',
+      `Ordem de Serviço #${newRepair.id} foi aberta para o cliente "${finalClientName}"!`,
+      'success'
+    );
+
+    // Send a browser notification if possible
+    this.sendBrowserNotification(
+      `Nova O.S. Gerada: ${newRepair.id}`,
+      `Uma nova ordem de serviço para seu ${newRepair.deviceType} foi aberta.`
+    );
+
+    // Reset the form and switch back to dashboard
+    this.adminCreateOsForm.reset({
+      clientId: '',
+      deviceType: 'Notebook',
+      deviceBrandModel: '',
+      description: '',
+      urgency: 'Média',
+      laborServiceId: '',
+      newClientName: '',
+      newClientEmail: '',
+      newClientPhone: '',
+      newClientCpf: ''
+    });
+    this.adminClientSearchQuery.set('');
+    this.adminClientMode.set('select');
+    this.adminTab.set('dashboard');
+  }
+
+  getSelectedClient(clientId: string | null | undefined): User | undefined {
+    if (!clientId) return undefined;
+    return this.store.users().find(u => u.id === clientId);
+  }
+
+  isEmailRegistered(): boolean {
+    if (this.store.currentUser()?.role === 'client') return false;
+    const email = this.budgetForm.get('clientEmail')?.value?.trim().toLowerCase();
+    if (!email) return false;
+    return this.store.users().some(u => u.email.toLowerCase() === email && u.role === 'client');
+  }
+
+  formatPhoneValue(value: string): string {
+    if (!value) return '';
+    let numbers = value.replace(/\D/g, '');
+    if (numbers.length > 11) {
+      numbers = numbers.slice(0, 11);
+    }
+    if (numbers.length <= 2) {
+      return numbers.length > 0 ? `(${numbers}` : '';
+    } else if (numbers.length <= 6) {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    } else if (numbers.length <= 10) {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(6)}`;
+    } else {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
+    }
+  }
+
+  onPhoneInput(event: Event, formName: 'register' | 'budget' | 'edit') {
+    const input = event.target as HTMLInputElement;
+    const formatted = this.formatPhoneValue(input.value);
+    
+    if (formName === 'register') {
+      this.registerForm.get('phone')?.setValue(formatted, { emitEvent: false });
+    } else if (formName === 'budget') {
+      this.budgetForm.get('clientPhone')?.setValue(formatted, { emitEvent: false });
+    } else if (formName === 'edit') {
+      this.clientEditForm.get('clientPhone')?.setValue(formatted, { emitEvent: false });
+    }
+    
+    input.value = formatted;
   }
 
   // --- Labor Services Admin CRUD Methods ---
